@@ -55,7 +55,18 @@ class Graph:
         dist: numeric (int or float), optional
             Distance between node1 and node2 on the edge. Default is 1.
         """
-        raise NotImplementedError
+        if node1 not in self.graph:
+            self.graph[node1] = []
+            self.nb_nodes += 1
+            self.nodes.append(node1)
+        if node2 not in self.graph:
+            self.graph[node2] = []
+            self.nb_nodes += 1
+            self.nodes.append(node2)
+
+        self.graph[node1].append((node2, power_min, dist))
+        self.graph[node2].append((node1, power_min, dist))
+        self.nb_edges += 1
     
 
     def get_path_with_power(self, src, dest, power):
@@ -97,7 +108,20 @@ def graph_from_file(filename):
 
     Outputs: 
     -----------
-    G: Graph
+    g: Graph
         An object of the class Graph with the graph from file_name.
     """
-    raise NotImplementedError
+    with open(filename, "r") as file:
+        n, m = map(int, file.readline().split())
+        g = Graph(range(1, n+1))
+        for _ in range(m):
+            edge = list(map(int, file.readline().split()))
+            if len(edge) == 3:
+                node1, node2, power_min = edge
+                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+            elif len(edge) == 4:
+                node1, node2, power_min, dist = edge
+                g.add_edge(node1, node2, power_min, dist)
+            else:
+                raise Exception("Format incorrect")
+    return g
