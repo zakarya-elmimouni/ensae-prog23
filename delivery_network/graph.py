@@ -79,9 +79,9 @@ class Graph:
         else:
             S=[[self.nodes[0]]]
         B=self.nodes
-        for element in graph[self.nodes[0]]:
+        for element in self.graph[self.nodes[0]]:
             S[0].append(element)
-            for x in graph[element]:
+            for x in self.graph[element]:
                 if x not in S[0]:
                     S[0].append(x)
         for j in range (len(S[0])):
