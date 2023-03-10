@@ -117,21 +117,6 @@ class Graph:
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
 
-    def connected_component(nodes):
-        if nodes==[]:
-            return []
-        else:
-            S=[[self.nodes[0]]]
-        for element in self.graph[nodes[0]]:
-            if element[0] not in S[0]:
-                S[0].append(element[0])
-            for x in self.graph[element[0]]:
-                if x not in S[0]:
-                    S[0].append(x)
-        for j in range (len(S[0])):
-            nodes.remove(S[0][j]) #les nodes privés de S[i]
-       
-        return S+ connected_component(nodes)
     def connected_components_set(self):
 
         """
@@ -168,18 +153,32 @@ class Graph:
                 if voisin[1]>fin:
                     fin=voisin[1]# recuperation du k maximal
         return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
-    def graph_from_file(filename):
-        with open(filename, "r") as file:
-            n, m = map(int, file.readline().split())
-            g = Graph(range(1, n+1))
-            for _ in range(m):
-                edge = list(map(int, file.readline().split()))
-                if len(edge) == 3:
-                    node1, node2, power_min = edge
-                    g.add_edge(node1, node2, power_min) # will add dist=1 by default
-                elif len(edge) == 4:
-                    node1, node2, power_min, dist = edge
-                    g.add_edge(node1, node2, power_min, dist)
-                else:
-                    raise Exception("Format incorrect")
-        return g
+def graph_from_file(filename):
+    with open(filename, "r") as file:
+        n, m = map(int, file.readline().split())
+        g = Graph(range(1, n+1))
+        for _ in range(m):
+            edge = list(map(int, file.readline().split()))
+            if len(edge) == 3:
+                node1, node2, power_min = edge
+                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+            elif len(edge) == 4:
+                node1, node2, power_min, dist = edge
+                g.add_edge(node1, node2, power_min, dist)
+            else:
+                raise Exception("Format incorrect")
+    return g
+def composante_connexe(nodes):
+    if nodes==[]:
+        return []
+    else:
+        S=[[self.nodes[0]]]
+    for element in self.graph[nodes[0]]:
+        if element[0] not in S[0]:
+            S[0].append(element[0])
+        for x in self.graph[element[0]]:
+            if x not in S[0]:
+                S[0].append(x)
+    for j in range (len(S[0])):
+        nodes.remove(S[0][j]) #les nodes privés de S[i]
+    return S+ composante_connexe(nodes)
