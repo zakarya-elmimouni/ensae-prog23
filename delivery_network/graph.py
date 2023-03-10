@@ -124,7 +124,7 @@ class Graph:
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
         #y'a la fonction composante connexe
-        return connected_component(self.nodes)
+        return composante_connexe(self.nodes)
     def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
