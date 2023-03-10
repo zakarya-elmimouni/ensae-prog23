@@ -153,6 +153,31 @@ def plus_court_chemin(graph,src, dest, power):
         while get_path_with_power(graph,src, dest, k)==None:
             k+=1
         return K
+   # un essai dichotomique
+   def dichotomie(debut,fin):
+        while debut<fin:
+        milieu = (debut+fin)//2
+        if get_path_with_power(self,src, dest, milieu) ==None:
+             debut=milieu
+             return dichotomie(debut,fin)
+        else:
+            fin = milieu
+            return dichotomie(debut,fin)
+        if debut==fin :
+            return debut
+     def min_power(self, src, dest):
+        fin=0
+        debut=0
+        for sommet in self.graph.keys():
+            for voisin in self.graph[sommet]:
+                if voisin[1]>fin:
+                    fin=voisin[1]# recuperation du k maximal
+        return dichotomie(debut,fin),get_path_with_power(self,src, dest,dichotomie(debut,fin))
+   
+
+        
+           
+    
 
 
 def graph_from_file(filename):
