@@ -68,40 +68,91 @@ class Graph:
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
     
-
-    def get_path_with_power(self, src, dest, power):
-        raise NotImplementedError
+def get_path_with_power(graph,src, dest, power):
+ 
+        #question 5
+    #recherche du chemin le plus court à l'aide de dijkstra
+    #essaie d'implementation sur mon problème
+#algprithme de dijikstra
+#graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
+def dijkstra(graph,source,puissance_camion):
+    #initialisation
+    precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
+    dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
+    distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
+    distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
+    a_traiter = [(0, source)]#il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
+    while a_traiter:#tant qu'il a des element à traiter on va parcourir la boucle
+        # on fait parcours en larguer : une fois un element et traité on parcourt ses voisins et puis les voisins des voisins etc...
+        dist_noeud, noeud = a_traiter.pop()
+        if not dejaTraite[noeud]:
+            dejaTraite[noeud] = True
+            for voisin in graph[noeud]:#graph[noued] est une liste
+                if voisin[1]<=puissance_camion:
+                    dist_voisin = dist_noeud + voisin[2]
+                    if dist_voisin < distance[voisin[0]]:
+                        distance[voisin[0]] = dist_voisin
+                        precedent[voisin[0]] = noeud
+                        a_traiter.append((dist_voisin, voisin[0]))
+        a_traiter.sort(reverse=True)
+    return distance, precedent
+#print(dijkstra(graph,'A',5))#parfait le programme marche bien 
+#il reste à chercher comment passer de ca à trouver le plus petit chemin entre deux points
+def plus_court_chemin(graph,src, dest, power):
+    distance, precedent=dijkstra(graph,src,power)
+     #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
+    if distance[dest]== "inf":
+        return None
+    else:
+        path=[]
+        dernier=dest
+        while dernier!=src:
+            path.append(dernier)
+            dernier=precedent[dernier]
+        path.append(src)
+        path.reverse()
+        return path,distance[dest]
+####print(get_path_with_power(graph,"A", "F", 5))
+#un pont à améliorer dans ce programme c'est de faire un teste de composante connxe au début
+#si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
+#dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
 
-    def connected_components(self):
-        if self.nodes==[]:
+    def connected_component(nodes):
+        if nodes==[]:
         return []
         else:
             S=[[self.nodes[0]]]
-        B=self.nodes
-        for element in self.graph[self.nodes[0]]:
-            S[0].append(element)
-            for x in self.graph[element]:
+        
+        
+        for element in self.graph[nodes[0]]:
+            if element[0] not in S[0]:
+                S[0].append(element[0])
+            for x in self.graph[element[0]]:
                 if x not in S[0]:
                     S[0].append(x)
         for j in range (len(S[0])):
-            self.nodes.remove(S[0][j]) #les nodes privés de S[i]
+            nodes.remove(S[0][j]) #les nodes privés de S[i]
        
-        return S+ connected_component(self)
+        return S+ connected_component(nodes)
 
 
     def connected_components_set(self):
+
         """
         The result should be a set of frozensets (one per component), 
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
-        return set(map(frozenset, self.connected_components()))
-    
+        #y'a la fonction composante connexe
+        return connected_component(self.nodes)
     def min_power(self, src, dest):
         """
         Should return path, min_power. 
         """
-        raise NotImplementedError
+        k=0
+        while get_path_with_power(graph,src, dest, k)==None:
+            k+=1
+        return K
 
 
 def graph_from_file(filename):
