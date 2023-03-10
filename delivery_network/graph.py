@@ -173,10 +173,7 @@ def plus_court_chemin(graph,src, dest, power):
                 if voisin[1]>fin:
                     fin=voisin[1]# recuperation du k maximal
         return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
-   
-
-        
-           
+       
     
 
 
