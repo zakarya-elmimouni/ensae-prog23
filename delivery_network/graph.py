@@ -75,8 +75,7 @@ class Graph:
     #essaie d'implementation sur mon problème
 #algprithme de dijikstra
 #graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
-    def dijkstra(graph,source,puissance_camion):
-    #initialisation
+     def dijkstra(graph,source,puissance_camion):
         precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
         dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
         distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
