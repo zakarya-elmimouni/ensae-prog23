@@ -118,68 +118,57 @@ def plus_court_chemin(graph,src, dest, power):
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
 
-    def connected_component(nodes):
-        if nodes==[]:
-        return []
-        else:
-            S=[[self.nodes[0]]]
-        
-        
-        for element in self.graph[nodes[0]]:
-            if element[0] not in S[0]:
-                S[0].append(element[0])
-            for x in self.graph[element[0]]:
-                if x not in S[0]:
-                    S[0].append(x)
-        for j in range (len(S[0])):
-            nodes.remove(S[0][j]) #les nodes privés de S[i]
+def connected_component(nodes):
+    if nodes==[]:
+    return []
+    else:
+        S=[[self.nodes[0]]]
+    for element in self.graph[nodes[0]]:
+        if element[0] not in S[0]:
+            S[0].append(element[0])
+        for x in self.graph[element[0]]:
+            if x not in S[0]:
+                S[0].append(x)
+    for j in range (len(S[0])):
+        nodes.remove(S[0][j]) #les nodes privés de S[i]
        
-        return S+ connected_component(nodes)
-
-
-    def connected_components_set(self):
+    return S+ connected_component(nodes)
+def connected_components_set(self):
 
         """
         The result should be a set of frozensets (one per component), 
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
         #y'a la fonction composante connexe
-        return connected_component(self.nodes)
-    def min_power_linéaire(self, src, dest):
+    return connected_component(self.nodes)
+def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
         """
-        k=0
-        while get_path_with_power(graph,src, dest, k)==None:
-           k+=1
-        return K
+    k=0
+    while get_path_with_power(graph,src, dest, k)==None:
+        k+=1
+    return K
     #un essai dichotomique
-   def dichotomie(debut,fin):
-        while debut<fin:
-        milieu = (debut+fin)//2
-        if get_path_with_power(self,src, dest, milieu) ==None:
-             debut=milieu
-             return dichotomie(debut,fin)
-        else:
-            fin = milieu
-            return dichotomie(debut,fin)
-        if debut==fin :
-            return debut
-     def min_power(self, src, dest):
-        fin=0
-        debut=0
-        for sommet in self.graph.keys():
-            for voisin in self.graph[sommet]:
-                if voisin[1]>fin:
-                    fin=voisin[1]# recuperation du k maximal
-        return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
-   
-
-        
-           
-    
-
-
+def dichotomie(debut,fin):
+    while debut<fin:
+    milieu = (debut+fin)//2
+    if get_path_with_power(self,src, dest, milieu) ==None:
+        debut=milieu
+        return dichotomie(debut,fin)
+    else:
+        fin = milieu
+        return dichotomie(debut,fin)
+    if debut==fin :
+        return debut
+def min_power(self, src, dest):
+    fin=0
+    debut=0
+    for sommet in self.graph.keys():
+        for voisin in self.graph[sommet]:
+            if voisin[1]>fin:
+                fin=voisin[1]# recuperation du k maximal
+    return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
 def graph_from_file(filename):
     """
     Reads a text file and returns the graph as an object of the Graph class.
