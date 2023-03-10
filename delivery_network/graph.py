@@ -145,15 +145,15 @@ def plus_court_chemin(graph,src, dest, power):
         """
         #y'a la fonction composante connexe
         return connected_component(self.nodes)
-    def min_power(self, src, dest):
+    def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
         """
         k=0
         while get_path_with_power(graph,src, dest, k)==None:
-            k+=1
+           k+=1
         return K
-   # un essai dichotomique
+    #un essai dichotomique
    def dichotomie(debut,fin):
         while debut<fin:
         milieu = (debut+fin)//2
@@ -172,7 +172,7 @@ def plus_court_chemin(graph,src, dest, power):
             for voisin in self.graph[sommet]:
                 if voisin[1]>fin:
                     fin=voisin[1]# recuperation du k maximal
-        return dichotomie(debut,fin),get_path_with_power(self,src, dest,dichotomie(debut,fin))
+        return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
    
 
         
