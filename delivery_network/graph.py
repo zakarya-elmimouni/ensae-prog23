@@ -124,7 +124,7 @@ class Graph:
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
         #y'a la fonction composante connexe
-        return composante_connexe(self.nodes)
+        return composante_connexe(self.graph,self.nodes)
     def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
@@ -168,15 +168,15 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
-def composante_connexe(nodes):
+def composante_connexe(graph,nodes):
     if nodes==[]:
         return []
     else:
-        S=[[self.nodes[0]]]
-    for element in self.graph[nodes[0]]:
+        S=[[nodes[0]]]
+    for element in graph[nodes[0]]:
         if element[0] not in S[0]:
             S[0].append(element[0])
-        for x in self.graph[element[0]]:
+        for x in graph[element[0]]:
             if x not in S[0]:
                 S[0].append(x)
     for j in range (len(S[0])):
