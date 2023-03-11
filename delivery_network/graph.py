@@ -68,18 +68,8 @@ class Graph:
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
     
-
+#cette fonction est très volumineuse il parcours tout les chemins possibles
     def get_path_with_power(self, src, dest, power):
-
-"""This function allows you to see if there is a possible path between
-two nodes for a truck with a given power. If yes, it returns one of the 
-of the possible paths.
-
-Args:
-src (int): source, starting node
-dest (int): destinantion
-power (int): power of the truck
-"""
         explo=[(src,[src])]
         list_paths = [] # list of the paths between the nodes
         visited={i:False for i in self.nodes} 
@@ -95,6 +85,9 @@ power (int): power of the truck
                         explo.append((neighb[0], path + [neighb[0]]))
                         visited[neighb[0]] = True
         return None if list_paths ==[] else list_paths[0]
+    
+
+#cette fonction marche aussi mais il est basé sur dijkstra
     def get_path_with_power_1(self,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
      #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
@@ -108,6 +101,8 @@ power (int): power of the truck
                 dernier=precedent[dernier]
             path.append(src)
             path.reverse()
+            if path[0]!=src or path[-1]!=dest:
+                return None
             return path
  
        
