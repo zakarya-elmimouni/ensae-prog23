@@ -69,7 +69,7 @@ class Graph:
         self.nb_edges += 1
     
 
-def get_path_with_power(self, src, dest, power):
+    def get_path_with_power(self, src, dest, power):
 
 """This function allows you to see if there is a possible path between
 two nodes for a truck with a given power. If yes, it returns one of the 
@@ -80,22 +80,22 @@ src (int): source, starting node
 dest (int): destinantion
 power (int): power of the truck
 """
-explo=[(src,[src])]
-list_paths = [] # list of the paths between the nodes
-visited={i:False for i in self.nodes} 
-while explo : 
-    node, path = explo.pop(0) # it allows us to update the paths used
-    n_neigh = [self.graph[node][j] for j in range(0,len(self.graph[node]))] #list of (node's neighbours,powermin,dist)
-    for neighb in n_neigh :
-        powermin = neighb[1]
-        if neighb[0] not in path and power >= powermin: #for each neighbor accessible (by truck's power) not yet in the path
-            if neighb[0] == dest:
-                list_paths.append(path + [neighb[0]])
-            elif not visited[neighb[0]]:
-                explo.append((neighb[0], path + [neighb[0]]))
-                visited[neighb[0]] = True
-return None if list_paths ==[] else list_paths[0]
-def get_path_with_power_1(self,src, dest, power):
+        explo=[(src,[src])]
+        list_paths = [] # list of the paths between the nodes
+        visited={i:False for i in self.nodes} 
+        while explo : 
+            node, path = explo.pop(0) # it allows us to update the paths used
+            n_neigh = [self.graph[node][j] for j in range(0,len(self.graph[node]))] #list of (node's neighbours,powermin,dist)
+            for neighb in n_neigh :
+                powermin = neighb[1]
+                if neighb[0] not in path and power >= powermin: #for each neighbor accessible (by truck's power) not yet in the path
+                    if neighb[0] == dest:
+                        list_paths.append(path + [neighb[0]])
+                    elif not visited[neighb[0]]:
+                        explo.append((neighb[0], path + [neighb[0]]))
+                        visited[neighb[0]] = True
+        return None if list_paths ==[] else list_paths[0]
+    def get_path_with_power_1(self,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
      #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
         if distance[dest]== "inf":
