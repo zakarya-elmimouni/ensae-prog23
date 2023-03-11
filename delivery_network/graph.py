@@ -68,35 +68,24 @@ class Graph:
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
     
-    def get_path_with_power(graph,src, dest, power):
+    def get_path_with_power(self,src, dest, power):
+        distance, precedent=dijkstra(graph,src,power)
+     #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
+        if distance[dest]== "inf":
+            return None
+        else:
+            path=[]
+            dernier=dest
+            while dernier!=src:
+                path.append(dernier)
+                dernier=precedent[dernier]
+            path.append(src)
+            path.reverse()
+            return path
  
-        #question 5
-    #recherche du chemin le plus court à l'aide de dijkstra
-    #essaie d'implementation sur mon problème
-#algprithme de dijikstra
-#graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
-     def dijkstra(graph,source,puissance_camion):
-        precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
-        dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
-        distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
-        distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
-        a_traiter = [(0, source)]#il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
-        while a_traiter:#tant qu'il a des element à traiter on va parcourir la boucle
-        # on fait parcours en larguer : une fois un element et traité on parcourt ses voisins et puis les voisins des voisins etc...
-            dist_noeud, noeud = a_traiter.pop()
-            if not dejaTraite[noeud]:
-                dejaTraite[noeud] = True
-                for voisin in graph[noeud]:#graph[noued] est une liste
-                    if voisin[1]<=puissance_camion:
-                        dist_voisin = dist_noeud + voisin[2]
-                        if dist_voisin < distance[voisin[0]]:
-                            distance[voisin[0]] = dist_voisin
-                            precedent[voisin[0]] = noeud
-                            a_traiter.append((dist_voisin, voisin[0]))
-            a_traiter.sort(reverse=True)
-        return distance, precedent
-#print(dijkstra(graph,'A',5))#parfait le programme marche bien 
-#il reste à chercher comment passer de ca à trouver le plus petit chemin entre deux points
+       
+    
+#Question 5 : le chemin le plus court 
     def plus_court_chemin(graph,src, dest, power):
         distance, precedent=dijkstra(graph,src,power)
      #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
@@ -116,15 +105,29 @@ class Graph:
 #si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
+    def connected_components(self):
+        composantes_connexes=[]
+        visited_nodes={noeud:False for noeud in self.nodes}
 
+        def deep_parcours(s):
+            composantes=[s]
+            for neighboor in self.graph[s]:
+                neighboor=neighboor[0]
+                if not visited_nodes[neighboor]:
+                    visited_nodes[neighboor]=True
+                    composantes+=deep_parcours(neighboor)
+            return composantes
+        
+        for s in self.nodes:
+            if not visited_nodes[s]:
+                composantes_connexes.append(deep_parcours(s))
+        return composantes_connexes
     def connected_components_set(self):
-
         """
         The result should be a set of frozensets (one per component), 
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
-        #y'a la fonction composante connexe
-        return composante_connexe(self.graph,self.nodes)
+        return set(map(frozenset, self.connected_components()))                 
     def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
@@ -179,6 +182,31 @@ def composante_connexe(graph,nodes):
         for x in graph[element[0]]:
             if x not in S[0]:
                 S[0].append(x)
-    for j in range (len(S[0])):
-        nodes.remove(S[0][j]) #les nodes privés de S[i]
-    return S+ composante_connexe(nodes)
+    nodes=list(nodes)
+    for element in S[0]:
+        nodes.remove(element) #les nodes privés de S[i]
+    return S+ composante_connexe(graph,nodes)
+
+#recherche du chemin le plus court à l'aide de dijkstra
+#algorithme de dijikstra
+#graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
+def dijkstra(graph,source,puissance_camion):
+        precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
+        dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
+        distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
+        distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
+        a_traiter = [(0, source)]#il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
+        while a_traiter:#tant qu'il a des element à traiter on va parcourir la boucle
+        # on fait parcours en larguer : une fois un element et traité on parcourt ses voisins et puis les voisins des voisins etc...
+            dist_noeud, noeud = a_traiter.pop()
+            if not dejaTraite[noeud]:
+                dejaTraite[noeud] = True
+                for voisin in graph[noeud]:#graph[noued] est une liste
+                    if voisin[1]<=puissance_camion:
+                        dist_voisin = dist_noeud + voisin[2]
+                        if dist_voisin < distance[voisin[0]]:
+                            distance[voisin[0]] = dist_voisin
+                            precedent[voisin[0]] = noeud
+                            a_traiter.append((dist_voisin, voisin[0]))
+            a_traiter.sort(reverse=True)
+        return distance, precedent
