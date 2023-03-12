@@ -149,7 +149,9 @@ class Graph:
         The result should be a set of frozensets (one per component), 
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
-        return set(map(frozenset, self.connected_components()))                 
+        return set(map(frozenset, self.connected_components())) 
+    def connected_components_set_1(self): 
+        return composante_connexe(self.graph,self.nodes)              
     def min_power_linéaire(self, src, dest):
         """
         Should return path, min_power. 
@@ -157,27 +159,66 @@ class Graph:
         k=0
         while get_path_with_power(graph,src, dest, k)==None:
             k+=1
-        return K
+        return k,get_path_with_power(graph,src, dest, k)
     #un essai dichotomique
-    def dichotomie(debut,fin):
-        while debut<fin:
-            milieu = (debut+fin)//2
-            if get_path_with_power(self,src, dest, milieu) ==None:
-                debut=milieu
-                return dichotomie(debut,fin)
-            else:
-                fin = milieu
-                return dichotomie(debut,fin)
-            if debut==fin :
-                return debut
+    
+    # le programme de la question 6 est basée sur une recherche dichotomique
+    #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
         fin=0
         debut=0
-        for sommet in self.graph.keys():
+        for sommet in self.graph.keys():#recherche de la puissance maximale des arretes
             for voisin in self.graph[sommet]:
                 if voisin[1]>fin:
-                    fin=voisin[1]# recuperation du k maximal
+                    fin=voisin[1]  #récuperation du maximum
         return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
+    def Kruksal(self):
+    arretes=[]
+    for node in self.graph:
+        for voisin in self.graph[node]:
+            arretes.append([node,voisin[0], voisin[1], voisin[2]])
+    d = {}
+    for liste in arretes:
+    a= tuple(liste[:2])
+    if a not in d:
+        d[a] = liste
+    resultat = list(d.values())
+    arretes = resultat
+    nb_nodes = len(self.graph.keys())
+
+    arretes.sort(key = lambda x :x[2] )
+    A=[]
+    S=[]
+    for x in arretes : 
+        if (x[0] not in S) and (x[1] in S):
+            S.append(x[0])
+            A.append(x)
+        elif (x[0] in S) and (x[1] not in S):
+            S.append(x[1])
+            A.append(x)
+        elif (x[0] not in S) and (x[1] not in S):
+            S.append(x[0])
+            S.append(x[1])
+            A.append(x)
+
+    g_mst={}
+    for m in S : 
+        g_mst[m]=[]
+    for m in A :
+        g_mst[m[0]].append((m[1],m[2],m[3]))
+        g_mst[m[1]].append((m[0],m[2],m[3]))
+    
+    
+    return(g_mst)
+    def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+        fin=0
+        debut=0
+        arbre_couvrant=Kruksal(self)
+        for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
+            for voisin in arbre_couvrant[sommet]:
+                if voisin[1]>fin:
+                    fin=voisin[1]  #récuperation du maximum
+        return dichotomie(debut,fin)
 def graph_from_file(filename):
     with open(filename, "r") as file:
         n, m = map(int, file.readline().split())
@@ -193,6 +234,7 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
+
 def composante_connexe(graph,nodes):
     if nodes==[]:
         return []
@@ -202,11 +244,11 @@ def composante_connexe(graph,nodes):
         if element[0] not in S[0]:
             S[0].append(element[0])
         for x in graph[element[0]]:
-            if x not in S[0]:
-                S[0].append(x)
+            if x[0] not in S[0]:
+                S[0].append(x[0])
     nodes=list(nodes)
     for element in S[0]:
-        nodes.remove(element) #les nodes privés de S[i]
+       nodes.remove(element) #les nodes privés de S[i]
     return S+ composante_connexe(graph,nodes)
 
 #recherche du chemin le plus court à l'aide de dijkstra
@@ -232,3 +274,17 @@ def dijkstra(graph,source,puissance_camion):
                             a_traiter.append((dist_voisin, voisin[0]))
             a_traiter.sort(reverse=True)
         return distance, precedent
+#programme de recherche dichotomique pour la fonction min power
+def dichotomie(debut,fin):
+        while debut<fin:
+            milieu = (debut+fin)//2
+            if get_path_with_power(self,src, dest, milieu) ==None:
+                debut=milieu
+                return dichotomie(debut,fin)
+            else:
+                fin = milieu
+                return dichotomie(debut,fin)
+            if debut==fin :
+                return debut
+
+    
