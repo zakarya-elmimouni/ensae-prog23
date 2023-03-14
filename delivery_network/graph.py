@@ -28,7 +28,7 @@ class Graph:
         self.graph = dict([(n, []) for n in nodes])
         self.nb_nodes = len(nodes)
         self.nb_edges = 0
-    
+        self.power=[]
 
     def __str__(self):
         """Prints the graph as a list of neighbors for each node (one per line)"""
@@ -154,7 +154,7 @@ class Graph:
         Should return path, min_power. 
         """
         k=0
-        while get_path_with_power(graph,src, dest, k)==None:
+        while get_path_with_power(self.graph,src, dest, k)==None:
             k+=1
         return k,get_path_with_power(self.graph,src, dest, k)
     #un essai dichotomique
@@ -162,15 +162,21 @@ class Graph:
     # le programme de la question 6 est basée sur une recherche dichotomique
     #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
-        fin=0
-        debut=0
-        for sommet in self.graph.keys():#recherche de la puissance maximale des arretes
-            for voisin in self.graph[sommet]:
-                if voisin[1]>fin:
-                    fin=voisin[1]  #récuperation du maximum
-        return dichotomie(self,debut,fin)
+        if self.get_path_with_power(src,dest,float('inf'))!=None:
+            self.power.sort()
+            fin=len(self.power)-1
+            debut=0
+            milieu=(fin+debut)//2
+            while debut<fin:
+                if self.get_path_with_power(src,dest,self.power[milieu])!=None:
+                    fin=milieu
+                else:
+                    debut=milieu+1
+                milieu=(debut+fin)//2
+            return self.power[milieu]
+        raise Exception ('pas de chemin entre votre depart et votre arrivée')
         
-    def Kruksal(self):
+    def kruskal(self):
         arretes=[]
         for node in self.graph:
             for voisin in self.graph[node]:
@@ -205,9 +211,9 @@ class Graph:
         for m in A :
             g_mst[m[0]].append((m[1],m[2],m[3]))
             g_mst[m[1]].append((m[0],m[2],m[3]))
-    
-    
         return(g_mst)
+    
+
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
@@ -245,9 +251,11 @@ def graph_from_file(filename):
             if len(edge) == 3:
                 node1, node2, power_min = edge
                 g.add_edge(node1, node2, power_min) # will add dist=1 by default
+                g.power.append(power_min)
             elif len(edge) == 4:
                 node1, node2, power_min, dist = edge
                 g.add_edge(node1, node2, power_min, dist)
+                g.power.append(power_min)
             else:
                 raise Exception("Format incorrect")
     return g
@@ -291,7 +299,7 @@ def dijkstra(graph,source,puissance_camion):
             a_traiter.sort(reverse=True)
         return distance, precedent
 #programme de recherche dichotomique pour la fonction min power
-def dichotomie(debut,fin):
+def dichotomies(debut,fin):
         while debut<fin:
             milieu = (debut+fin)//2
             if get_path_with_power(src,dest,milieu)==None:
