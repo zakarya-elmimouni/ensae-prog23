@@ -29,6 +29,7 @@ class Graph:
         self.nb_nodes = len(nodes)
         self.nb_edges = 0
         self.power=[]
+        self.edges=[]
 
     def __str__(self):
         """Prints the graph as a list of neighbors for each node (one per line)"""
@@ -173,8 +174,8 @@ class Graph:
                 else:
                     debut=milieu+1
                 milieu=(debut+fin)//2
-            return self.power[milieu]
-        raise Exception ('pas de chemin entre votre depart et votre arrivée')
+            return self.power[debut]
+        raise Exception('pas de chemin')
         
     def kruskal(self):
         arretes=[]
@@ -252,10 +253,12 @@ def graph_from_file(filename):
                 node1, node2, power_min = edge
                 g.add_edge(node1, node2, power_min) # will add dist=1 by default
                 g.power.append(power_min)
+                g.edges.append((node1,node2,power_min,1))
             elif len(edge) == 4:
                 node1, node2, power_min, dist = edge
                 g.add_edge(node1, node2, power_min, dist)
                 g.power.append(power_min)
+                g.edges.append(node1, node2, power_min, dist)
             else:
                 raise Exception("Format incorrect")
     return g
