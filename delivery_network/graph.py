@@ -68,25 +68,22 @@ class Graph:
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
     
-#cette fonction est très volumineuse il parcours tout les chemins possibles
-    def get_path_with_power(self, src, dest, power):
-        explo=[(src,[src])]
-        list_paths = [] # list of the paths between the nodes
-        visited={i:False for i in self.nodes} 
-        while explo : 
-            node, path = explo.pop(0) # it allows us to update the paths used
-            n_neigh = [self.graph[node][j] for j in range(0,len(self.graph[node]))] #list of (node's neighbours,powermin,dist)
-            for neighb in n_neigh :
-                powermin = neighb[1]
-                if neighb[0] not in path and power >= powermin: #for each neighbor accessible (by truck's power) not yet in the path
-                    if neighb[0] == dest:
-                        list_paths.append(path + [neighb[0]])
-                    elif not visited[neighb[0]]:
-                        explo.append((neighb[0], path + [neighb[0]]))
-                        visited[neighb[0]] = True
-        return None if list_paths ==[] else list_paths[0]
-    
-
+    def get_path_with_power(self,src, dest, power):
+# un petit developpement de la fonction get_precedent pour avoir le chemin
+        precedent=get_precedent(self.graph,src,dest,power)
+        depart=src
+        arrivée=dest
+        if precedent[arrivée]== None:
+            return None
+        else:
+            path=[]
+            dernier=arrivée
+            while dernier!=depart:
+                path.append(dernier)
+                dernier=precedent[dernier]
+            path.append(depart)
+            path.reverse()
+            return path
 #cette fonction marche aussi mais il est basé sur dijkstra
     def get_path_with_power_1(self,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
@@ -159,7 +156,7 @@ class Graph:
         k=0
         while get_path_with_power(graph,src, dest, k)==None:
             k+=1
-        return k,get_path_with_power(graph,src, dest, k)
+        return k,get_path_with_power(self.graph,src, dest, k)
     #un essai dichotomique
     
     # le programme de la question 6 est basée sur une recherche dichotomique
@@ -171,45 +168,46 @@ class Graph:
             for voisin in self.graph[sommet]:
                 if voisin[1]>fin:
                     fin=voisin[1]  #récuperation du maximum
-        return dichotomie(debut,fin),get_path_with_power(self,src,dest,dichotomie(debut,fin))
+        return dichotomie(self,debut,fin)
+        
     def Kruksal(self):
-    arretes=[]
-    for node in self.graph:
-        for voisin in self.graph[node]:
-            arretes.append([node,voisin[0], voisin[1], voisin[2]])
-    d = {}
-    for liste in arretes:
-    a= tuple(liste[:2])
-    if a not in d:
-        d[a] = liste
-    resultat = list(d.values())
-    arretes = resultat
-    nb_nodes = len(self.graph.keys())
+        arretes=[]
+        for node in self.graph:
+            for voisin in self.graph[node]:
+                arretes.append([node,voisin[0], voisin[1], voisin[2]])
+        d = {}
+        for liste in arretes:
+            a= tuple(liste[:2])
+            if a not in d:
+                d[a] = liste
+        resultat = list(d.values())
+        arretes = resultat
+        nb_nodes = len(self.graph.keys())
 
-    arretes.sort(key = lambda x :x[2] )
-    A=[]
-    S=[]
-    for x in arretes : 
-        if (x[0] not in S) and (x[1] in S):
-            S.append(x[0])
-            A.append(x)
-        elif (x[0] in S) and (x[1] not in S):
-            S.append(x[1])
-            A.append(x)
-        elif (x[0] not in S) and (x[1] not in S):
-            S.append(x[0])
-            S.append(x[1])
-            A.append(x)
+        arretes.sort(key = lambda x :x[2] )
+        A=[]
+        S=[]
+        for x in arretes : 
+            if (x[0] not in S) and (x[1] in S):
+                S.append(x[0])
+                A.append(x)
+            elif (x[0] in S) and (x[1] not in S):
+                S.append(x[1])
+                A.append(x)
+            elif (x[0] not in S) and (x[1] not in S):
+                S.append(x[0])
+                S.append(x[1])
+                A.append(x)
 
-    g_mst={}
-    for m in S : 
-        g_mst[m]=[]
-    for m in A :
-        g_mst[m[0]].append((m[1],m[2],m[3]))
-        g_mst[m[1]].append((m[0],m[2],m[3]))
+        g_mst={}
+        for m in S : 
+            g_mst[m]=[]
+        for m in A :
+            g_mst[m[0]].append((m[1],m[2],m[3]))
+            g_mst[m[1]].append((m[0],m[2],m[3]))
     
     
-    return(g_mst)
+        return(g_mst)
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
@@ -220,6 +218,25 @@ class Graph:
                     fin=voisin[1]  #récuperation du maximum
         return dichotomie(debut,fin)
 def graph_from_file(filename):
+    """
+    Reads a text file and returns the graph as an object of the Graph class.
+
+    The file should have the following format: 
+        The first line of the file is 'n m'
+        The next m lines have 'node1 node2 power_min dist' or 'node1 node2 power_min' (if dist is missing, it will be set to 1 by default)
+        The nodes (node1, node2) should be named 1..n
+        All values are integers.
+
+    Parameters: 
+    -----------
+    filename: str
+        The name of the file
+
+    Outputs: 
+    -----------
+    g: Graph
+        An object of the class Graph with the graph from file_name.
+    """
     with open(filename, "r") as file:
         n, m = map(int, file.readline().split())
         g = Graph(range(1, n+1))
@@ -234,7 +251,6 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
-
 def composante_connexe(graph,nodes):
     if nodes==[]:
         return []
@@ -278,13 +294,31 @@ def dijkstra(graph,source,puissance_camion):
 def dichotomie(debut,fin):
         while debut<fin:
             milieu = (debut+fin)//2
-            if get_path_with_power(self,src, dest, milieu) ==None:
+            if get_path_with_power(src,dest,milieu)==None:
                 debut=milieu
                 return dichotomie(debut,fin)
             else:
                 fin = milieu
                 return dichotomie(debut,fin)
-            if debut==fin :
+            if debut==fin:
                 return debut
+
+def get_precedent(graph,depart,arrivée,power):
+    precedent={x:None for x in graph.keys()}
+    visited_nodes={x:False for x in graph.keys()}
+    pile=[depart]
+    visited_nodes[depart]=True
+    while pile:
+        sommet=pile.pop()
+        liste_nouveau_sommets_voisins=[voisin for voisin in graph[sommet]if not visited_nodes[voisin[0]]]
+        for voisin in liste_nouveau_sommets_voisins:
+            if voisin[1]<=power:
+                precedent[voisin[0]]=sommet
+                visited_nodes[voisin[0]]=True
+                if voisin[0] ==arrivée:
+                    return precedent
+                else:
+                    pile.append(voisin[0])
+    return precedent
 
     
