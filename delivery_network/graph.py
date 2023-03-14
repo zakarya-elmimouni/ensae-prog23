@@ -174,47 +174,9 @@ class Graph:
                 else:
                     debut=milieu+1
                 milieu=(debut+fin)//2
-            return self.power[debut]
+            return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
-        
-    def kruskal(self):
-        arretes=[]
-        for node in self.graph:
-            for voisin in self.graph[node]:
-                arretes.append([node,voisin[0], voisin[1], voisin[2]])
-        d = {}
-        for liste in arretes:
-            a= tuple(liste[:2])
-            if a not in d:
-                d[a] = liste
-        resultat = list(d.values())
-        arretes = resultat
-        nb_nodes = len(self.graph.keys())
-
-        arretes.sort(key = lambda x :x[2] )
-        A=[]
-        S=[]
-        for x in arretes : 
-            if (x[0] not in S) and (x[1] in S):
-                S.append(x[0])
-                A.append(x)
-            elif (x[0] in S) and (x[1] not in S):
-                S.append(x[1])
-                A.append(x)
-            elif (x[0] not in S) and (x[1] not in S):
-                S.append(x[0])
-                S.append(x[1])
-                A.append(x)
-
-        g_mst={}
-        for m in S : 
-            g_mst[m]=[]
-        for m in A :
-            g_mst[m[0]].append((m[1],m[2],m[3]))
-            g_mst[m[1]].append((m[0],m[2],m[3]))
-        return(g_mst)
     
-
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
@@ -258,7 +220,7 @@ def graph_from_file(filename):
                 node1, node2, power_min, dist = edge
                 g.add_edge(node1, node2, power_min, dist)
                 g.power.append(power_min)
-                g.edges.append(node1, node2, power_min, dist)
+                g.edges.append((node1, node2, power_min, dist))
             else:
                 raise Exception("Format incorrect")
     return g
@@ -331,5 +293,59 @@ def get_precedent(graph,depart,arrivée,power):
                 else:
                     pile.append(voisin[0])
     return precedent
-
+def kruskal(g):
+        arretes=g.edges
+        d = {}
+        for liste in arretes:
+            a= tuple(liste[:2])
+            if a not in d:
+                d[a] = liste
+        resultat = list(d.values())
+        arretes = resultat
+        nb_nodes = g.nb_nodes
+        arretes.sort(key = lambda x :x[2] )
+        a=1
+        A=[]
+        S=[]
+        liste_aretes=[]
+        for x in arretes : 
+            if (x[0] not in S) and (x[1] in S):
+                S.append(x[0])
+                A.append(x)
+                liste_aretes.append(tuple(x[:2]))
+            elif (x[0] in S) and (x[1] not in S):
+                S.append(x[1])
+                A.append(x)
+                liste_aretes.append(tuple(x[:2]))
+            elif (x[0] not in S) and (x[1] not in S):
+                S.append(x[0])
+                S.append(x[1])
+                A.append(x)
+                liste_aretes.append(tuple(x[:2]))
+            elif  (x[0] in S) and (x[1] in S):
+                for sommet in S:
+                    if ((x[0],sommet) in liste_aretes)and((x[1],sommet) in liste_aretes):
+                        a=0
+                        break#pas besoin de voir sur les autres sommets
+                    elif((sommet,x[0]) in liste_aretes)and((x[1],sommet) in liste_aretes):
+                        a=0
+                        break#pas besoin de voir sur les autres sommets
+                    elif((x[0],sommet) in liste_aretes)and((sommet,x[1]) in liste_aretes):
+                        a=0
+                        break #pas besoin de voir sur les autres sommets
+                    elif((sommet,x[0]) in liste_aretes)and((sommet,x[1]) in liste_aretes):
+                        a=0
+                        break #pas besoin de voir sur les autres sommets
+                    else:
+                        a=1
+                if a==1:
+                    A.append(x)
+                    liste_aretes.append(tuple(x[:2]))
+        g_mst={}
+        for m in S : 
+            g_mst[m]=[]
+        for m in A :
+            g_mst[m[0]].append((m[1],m[2],m[3]))
+            g_mst[m[1]].append((m[0],m[2],m[3]))
+        return(g_mst)
     
