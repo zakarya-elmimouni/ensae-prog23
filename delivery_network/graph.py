@@ -85,26 +85,7 @@ class Graph:
             path.append(depart)
             path.reverse()
             return path
-#cette fonction marche aussi mais il est basé sur dijkstra
-    def get_path_with_power_1(self,src, dest, power):
-        distance, precedent=dijkstra(self.graph,src,power)
-     #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
-        if distance[dest]== "inf":
-            return None
-        else:
-            path=[]
-            dernier=dest
-            while dernier!=src and precedent[dernier]!=None :
-                path.append(dernier)
-                dernier=precedent[dernier]
-            path.append(src)
-            path.reverse()
-            if path[0]!=src or path[-1]!=dest:
-                return None
-            return path
- 
-       
-    
+           
 #Question 5 : le chemin le plus court 
     def plus_court_chemin(graph,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
@@ -177,15 +158,29 @@ class Graph:
             return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
     
-    def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+    def puissance_min(g,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
-        arbre_couvrant=Kruksal(self)
+        arbre_couvrant=kruskal(g)
+        power=[]
         for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
             for voisin in arbre_couvrant[sommet]:
-                if voisin[1]>fin:
-                    fin=voisin[1]  #récuperation du maximum
-        return dichotomie(debut,fin)
+                power.append(voisin[1])
+                  #récuperation du maximum
+        if self.get_path_with_power(src,dest,float('inf'))!=None:
+            power.sort()
+            fin=len(power)-1
+            debut=0
+            milieu=(fin+debut)//2
+            while debut<fin:
+                if self.get_path_with_power(src,dest,power[milieu])!=None:
+                    fin=milieu
+                else:
+                    debut=milieu+1
+                milieu=(debut+fin)//2
+            return self.get_path_with_power(src,dest,power[milieu]),power[debut]
+        raise Exception('pas de chemin')
+        
 def graph_from_file(filename):
     """
     Reads a text file and returns the graph as an object of the Graph class.
