@@ -1,3 +1,4 @@
+from time import perf_counter
 class Graph:
     """
     A class representing graphs as adjacency lists and implementing various algorithms on the graphs. Graphs in the class are not oriented. 
@@ -91,11 +92,14 @@ class Graph:
             path.append(depart)
             path.reverse()
             return path
+
+        # la complexité de get_path_with_power est la même que la complexité de la fonction get_precedent
+        # C'est une complexité de l'ordre O(V**2) , avec V le nombre de sommets.
            
 #Question 5 : le chemin le plus court 
     def plus_court_chemin(graph,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
-     #({'A': 0, 'B': 1, 'C': 3, 'D': 7, 'E': inf, 'F': inf}, {'A': None, 'B': 'A', 'C': 'B', 'D': 'B', 'E': None, 'F': None})
+    
         if distance[dest]== "inf":
             return None
         else:
@@ -107,7 +111,6 @@ class Graph:
             path.append(src)
             path.reverse()
             return path,distance[dest]
-####print(get_path_with_power(graph,"A", "F", 5))
 #un pont à améliorer dans ce programme c'est de faire un teste de composante connxe au début
 #si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
@@ -135,18 +138,10 @@ class Graph:
         For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
         """
         return set(map(frozenset, self.connected_components())) 
-    def connected_components_set_1(self): 
-        return composante_connexe(self.graph,self.nodes)              
-    def min_power_linéaire(self, src, dest):
-        """
-        Should return path, min_power. 
-        """
-        k=0
-        while get_path_with_power(self.graph,src, dest, k)==None:
-            k+=1
-        return k,get_path_with_power(self.graph,src, dest, k)
-    #un essai dichotomique
-    
+
+   
+
+    #Question 6
 
     # le programme de la question 6 est basée sur une recherche dichotomique
     #début 0 et fin égale au max des puissances des arretes
@@ -277,21 +272,6 @@ def dijkstra(graph,source,puissance_camion):
             a_traiter.sort(reverse=True)
         return distance, precedent
 
-#Question 6
-
-#programme de recherche dichotomique pour la fonction min power
-def dichotomies(debut,fin):
-        while debut<fin:
-            milieu = (debut+fin)//2
-            if get_path_with_power(src,dest,milieu)==None:
-                debut=milieu
-                return dichotomie(debut,fin)
-            else:
-                fin = milieu
-                return dichotomie(debut,fin)
-            if debut==fin:
-                return debut
-
 
 # Question 3 (suite)
 def get_precedent(graph,depart,arrivée,power):
@@ -314,7 +294,7 @@ def get_precedent(graph,depart,arrivée,power):
 
 
 #Question 10
-from time import perf_counter
+
 def temps_moyen(file):
     g = graph_from_file(file)
     i = 0
