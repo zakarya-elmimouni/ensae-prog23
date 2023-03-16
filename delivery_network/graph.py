@@ -41,6 +41,9 @@ class Graph:
                 output += f"{source}-->{destination}\n"
         return output
     
+
+    #Question 1
+
     def add_edge(self, node1, node2, power_min, dist=1):
         """
         Adds an edge to the graph. Graphs are not oriented, hence an edge is added to the adjacency list of both end nodes. 
@@ -56,6 +59,7 @@ class Graph:
         dist: numeric (int or float), optional
             Distance between node1 and node2 on the edge. Default is 1.
         """
+        #On vérifie d'abord si les noeuds de notre nouevlle arrette existe déja dans notre graph, sinon on les ajoute
         if node1 not in self.graph:
             self.graph[node1] = []
             self.nb_nodes += 1
@@ -68,6 +72,8 @@ class Graph:
         self.graph[node1].append((node2, power_min, dist))
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
+
+    #Question 3 ( voir la suite de la question 3 aussi)
     
     def get_path_with_power(self,src, dest, power):
 # un petit developpement de la fonction get_precedent pour avoir le chemin
@@ -141,6 +147,7 @@ class Graph:
         return k,get_path_with_power(self.graph,src, dest, k)
     #un essai dichotomique
     
+
     # le programme de la question 6 est basée sur une recherche dichotomique
     #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
@@ -157,6 +164,9 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
+
+
+    #Question 14
     
     def puissance_min(g,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
@@ -180,6 +190,8 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,power[milieu]),power[debut]
         raise Exception('pas de chemin')
+
+#Question 1 (suite)
         
 def graph_from_file(filename):
     """
@@ -219,6 +231,10 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
+
+
+#Question 2
+
 def composante_connexe(graph,nodes):
     if nodes==[]:
         return []
@@ -234,6 +250,8 @@ def composante_connexe(graph,nodes):
     for element in S[0]:
        nodes.remove(element) #les nodes privés de S[i]
     return S+ composante_connexe(graph,nodes)
+
+#Question 5
 
 #recherche du chemin le plus court à l'aide de dijkstra
 #algorithme de dijikstra
@@ -258,6 +276,9 @@ def dijkstra(graph,source,puissance_camion):
                             a_traiter.append((dist_voisin, voisin[0]))
             a_traiter.sort(reverse=True)
         return distance, precedent
+
+#Question 6
+
 #programme de recherche dichotomique pour la fonction min power
 def dichotomies(debut,fin):
         while debut<fin:
@@ -271,6 +292,8 @@ def dichotomies(debut,fin):
             if debut==fin:
                 return debut
 
+
+# Question 3 (suite)
 def get_precedent(graph,depart,arrivée,power):
     precedent={x:None for x in graph.keys()}
     visited_nodes={x:False for x in graph.keys()}
@@ -288,7 +311,39 @@ def get_precedent(graph,depart,arrivée,power):
                 else:
                     pile.append(voisin[0])
     return precedent
+
+
+#Question 10
+from time import perf_counter
+def temps_moyen(file):
+    g = graph_from_file(file)
+    i = 0
+    L=[]
+    S=0
+    while i < 31 :
+        for u in g.nodes :
+            for v in g.nodes :
+                if u!=v :
+                    t1 = perf_counter()
+                    a = Graph.min_power(g, u, v)
+                    t2 = perf_counter()
+                    L.append(t2-t1)
+                    S = S + t2-t1
+                    i = i+1
+    return S/i
+
+#Question 11
+
+#     On utilise l'absurde, on suppose qu'il y a un chemin plus court qui n'est pas dans l'arbre couvrant,
+#  il suffira après de remplacer chaque arrete de ce nouveau chemin par une ou plusieurs arretes reliant les 2 mêmes points qui spnt dans l'arbre couvrant(c'est le principe même de l'arbre couvrant),
+#  mais puisqu'elle sont dans l'arbre couvrant donc la puissance est minimale, et donc on aura pu trouver un trajet d'une puissance encore plus petite
+# ==> Contradiction
+
+
+#Question 13
+    
 def kruskal(g):
+        # On va commencer par creer une liste avec des quadruplés pour toutes les arretes du graph
         arretes=g.edges
         d = {}
         for liste in arretes:
@@ -298,8 +353,11 @@ def kruskal(g):
         resultat = list(d.values())
         arretes = resultat
         nb_nodes = g.nb_nodes
+        # On ordonne les arretes selon leur poids de façon croissante
         arretes.sort(key = lambda x :x[2] )
         a=1
+         # A est une liste qui contiendra toutes les arretes de l'arbe couvrant
+         # S est une liste qui contiendra tout les sommets
         A=[]
         S=[]
         liste_aretes=[]
@@ -336,6 +394,7 @@ def kruskal(g):
                 if a==1:
                     A.append(x)
                     liste_aretes.append(tuple(x[:2]))
+        # Pour finir il reste de convertir la liste des arretes de l'arbre couvrant en un graph pour le retourner            
         g_mst={}
         for m in S : 
             g_mst[m]=[]
@@ -343,4 +402,24 @@ def kruskal(g):
             g_mst[m[0]].append((m[1],m[2],m[3]))
             g_mst[m[1]].append((m[0],m[2],m[3]))
         return(g_mst)
-    
+
+#Question 15
+
+# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal qui calcule la puissance minimale d'un camion pour couvrir un trajet donné est donc de O(U.log (V))("ce lui du tri rapide de kruskal") + O(U+V), qui est équivalent à O(U.log(V)), où U est le nombre d'arretes et V le nombre de sommets(ou noeuds)
+
+def nouveau_temps_moyen(file):
+    g = graph_from_file(file)
+    i = 0
+    L=[]
+    S=0
+    while i < 31 :
+        for u in g.nodes :
+            for v in g.nodes :
+                if u!=v :
+                    t1 = perf_counter()
+                    a = Graph.puissance_min(g, u, v)
+                    t2 = perf_counter()
+                    L.append(t2-t1)
+                    S = S + t2-t1
+                    i = i+1
+    return S/i
