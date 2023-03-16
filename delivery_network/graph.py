@@ -1,4 +1,5 @@
 from time import perf_counter
+from random import randint
 class Graph:
     """
     A class representing graphs as adjacency lists and implementing various algorithms on the graphs. Graphs in the class are not oriented. 
@@ -300,16 +301,17 @@ def temps_moyen(file):
     i = 0
     L=[]
     S=0
+    a = len(g)
     while i < 31 :
-        for u in g.nodes :
-            for v in g.nodes :
-                if u!=v :
-                    t1 = perf_counter()
-                    a = Graph.min_power(g, u, v)
-                    t2 = perf_counter()
-                    L.append(t2-t1)
-                    S = S + t2-t1
-                    i = i+1
+        i= randint(0,a-1)
+        j= randint(0,a-1)
+        if i!=j :
+            t1 = perf_counter()
+            a = Graph.min_power(g, g[i], g[j])
+            t2 = perf_counter()
+            L.append(t2-t1)
+             S = S + t2-t1
+             i = i+1
     return S/i
 
 #Question 11
