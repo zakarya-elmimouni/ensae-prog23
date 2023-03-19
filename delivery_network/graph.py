@@ -156,10 +156,7 @@ class Graph:
             if not visited_nodes[s]:
                 composantes_connexes.append(deep_parcours(s))
         return composantes_connexes
-   
-
-   
-
+    
     #Question 6
 
     # le programme de la question 6 est basée sur une recherche dichotomique
@@ -245,11 +242,7 @@ def graph_from_file(filename):
                 raise Exception("Format incorrect")
     return g
 
-
-
-
 #Question 5
-
 #recherche du chemin le plus court à l'aide de dijkstra
 #algorithme de dijikstra
 #graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
@@ -340,7 +333,7 @@ def nouveau_temps_moyen(file):
             t2 = perf_counter()
             L.append(t2-t1)
             S = S + t2-t1
-                    i = i+1
+            i = i+1
     return S/i
 def kruskal(g):
     """
@@ -367,8 +360,67 @@ def kruskal(g):
             ed.Union(x, y)
     return Arbre_couvrant
 
-def le_plus_petit_encetre_commun(v1,v2,arbre_couvrant):
-    liste_precedent=[]
+def le_plus_petit_encetre_commun(root,src,dest,arbre_couvrant):
+    liste_antécédent_v1=[v1]
+    pile=[root]
+    for element in 
+def profondeur (root,arbre_couvrant):
+    """ça retourne un dictionnaire {'sommet':profondeur}"""
+    visited_nodes={node:False for node in arbre_couvrant.nodes}
+    profondeur={node:None for node in arbre_couvrant.nodes}
+    peres={node:None for node in arbre_couvrant.nodes}
+    pile=[]
+    peres[root]=(root,0)
+    pile.append(root)
+    profondeur[root]=0
+    while pile:
+        pere=pile.pop()
+        for voisin in arbre_couvrant.graph[pere]:
+            if not visited_nodes[voisin[0]]:
+                profondeur[voisin[0]]=profondeur[pere]+1
+                visited_nodes[voisin[0]]=True
+                peres[voisin[0]]=(pere,voisin[1])
+                pile.append(voisin[0])
+    return profondeur,peres
+def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
+    peres,profondeurs=profondeurs(root,arbre_couvrant):
+    liste_ancetres_src=[src]
+    liste_ancetres_dest=[dest]
+    element=src
+    while element!=root:
+        liste_ancetres_src.append(peres[element])
+        element=peres[element][0]
+    liste_ancetres_src.append((root,0))
+    element=dest
+    while element!=root:
+        liste_ancetres_dest.append(peres[element])
+        element=peres[element]
+    liste_ancetres_dest.append((root,0))
+    #détermination du plus petit encetre commun 
+    for i in range(len(liste_ancetres_dest)):
+        for j in range(len(liste_ancetres_src)):
+            if liste_ancetres_dest[i][0]==liste_ancetres_src[j][0]:
+                indice_dest=i
+                indice_src=j
+                break
+    liste_ancetres_dest
+    liste_src=liste_ancetres_src[:indice_src]
+    liste_dest=liste_ancetres_dest[:indice_dest-1].reverse()
+    chemin=liste_src+liste_dest
+    #le chemin est donc liste_src+liste_dest
+    #determination du power min
+    puissance_min=min(noode[1]for node in chemin)
+    return puissance_min,chemin
+            
+
+    
+
+
+
+
+    
+
+
     
 
     
