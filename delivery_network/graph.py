@@ -297,22 +297,17 @@ def get_precedent(graph,depart,arrivée,power):
 
 #Question 10
 
-def temps_moyen(file):
-    g = graph_from_file(file)
+def temps_moyen(file1,file2):
+    g = graph_from_file(file1)
+    L= file2.split()
+    M = int(L[0])//10
     i = 0
-    L=[]
+    j=1
     S=0
-    a = len(g)
-    while i < 31 :
-        i= randint(0,a-1)
-        j= randint(0,a-1)
-        if i!=j :
+    while i < M :
             t1 = perf_counter()
-            a = Graph.min_power(g, g[i], g[j])
+            a = Graph.min_power(g, L[j], K[j+1])
             t2 = perf_counter()
-            L.append(t2-t1)
-            S = S + t2-t1
-            i = i+1
     return S/i
 
 #Question 11
@@ -331,18 +326,20 @@ def temps_moyen(file):
 
 def nouveau_temps_moyen(file):
     g = graph_from_file(file)
+    K= g.keys()
+    a=len(K)
     i = 0
     L=[]
     S=0
     while i < 31 :
-        for u in g.nodes :
-            for v in g.nodes :
-                if u!=v :
-                    t1 = perf_counter()
-                    a = Graph.puissance_min(g, u, v)
-                    t2 = perf_counter()
-                    L.append(t2-t1)
-                    S = S + t2-t1
+        n= randint(0, a-1)
+        m= randint(0,a-1)
+        if n!=m :
+            t1 = perf_counter()
+            a = Graph.puissance_min(g, K[n],K[m])
+            t2 = perf_counter()
+            L.append(t2-t1)
+            S = S + t2-t1
                     i = i+1
     return S/i
 def kruskal(g):
