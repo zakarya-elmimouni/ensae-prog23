@@ -1,8 +1,7 @@
 # This will work if ran from the root folder.
 import sys 
 sys.path.append("delivery_network")
-
-from graph import Graph,graph_from_file, kruskal
+from graph import Graph,graph_from_file, kruskal,EnsembleDisjoint
 import unittest   # The test framework
 
 class Test_MST(unittest.TestCase):
@@ -19,7 +18,7 @@ class Test_MST(unittest.TestCase):
                         8: [(1, 0, 1), (9, 14, 1)],
                         9: [(8, 14, 1)],
                         10: [(4, 4, 1)]}
-        self.assertEqual(g_mst, mst_expected)
+        self.assertEqual(g_mst.graph, mst_expected)
 
     def test_network05(self):
         g = graph_from_file("input/network.05.in")
@@ -29,7 +28,7 @@ class Test_MST(unittest.TestCase):
                         3: [(1, 2, 1)],
                         4: [(1, 4, 1)],
                         }
-        self.assertEqual(g_mst, mst_expected)
+        self.assertEqual(g_mst.graph, mst_expected)
 
 if __name__ == '__main__':
     unittest.main()

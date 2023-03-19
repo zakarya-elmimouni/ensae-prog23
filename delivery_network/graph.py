@@ -1,5 +1,28 @@
 from time import perf_counter
 from random import randint
+class EnsembleDisjoint:
+    """
+    Cette classe permet de gérer les ensmebles disjoints. Deux éléments sont
+    considérés dans le même ensemble s'ils ont le même parent.
+    """
+    parent = {}
+
+    # Création de n ensemble disjoints, état de départt de notre graphe
+    def __init__(self,g):
+        for element  in g.nodes:
+            self.parent[element] = element
+
+    # Fonction qui permet de retrouver le parent le plus lointain
+    def get_parent(self, k):
+        if self.parent[k] != k:
+            self.parent[k]=self.get_parent(self.parent[k])
+        return self.parent[k]
+
+    # Union de deux ensembles jusque là disjoints
+    def Union(self, a, b):
+        x = self.get_parent(a)
+        y = self.get_parent(b)
+        self.parent[x] = y
 class Graph:
     """
     A class representing graphs as adjacency lists and implementing various algorithms on the graphs. Graphs in the class are not oriented. 
@@ -133,12 +156,7 @@ class Graph:
             if not visited_nodes[s]:
                 composantes_connexes.append(deep_parcours(s))
         return composantes_connexes
-    def connected_components_set(self):
-        """
-        The result should be a set of frozensets (one per component), 
-        For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
-        """
-        return set(map(frozenset, self.connected_components())) 
+   
 
    
 
@@ -160,14 +178,13 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
-
-
+    
     #Question 14
     
-    def puissance_min(g,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+    def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
-        arbre_couvrant=kruskal(g)
+        arbre_couvrant=kruskal(self.graph)
         power=[]
         for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
             for voisin in arbre_couvrant[sommet]:
@@ -186,7 +203,7 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,power[milieu]),power[debut]
         raise Exception('pas de chemin')
-
+    
 #Question 1 (suite)
         
 def graph_from_file(filename):
@@ -229,23 +246,7 @@ def graph_from_file(filename):
     return g
 
 
-#Question 2
 
-def composante_connexe(graph,nodes):
-    if nodes==[]:
-        return []
-    else:
-        S=[[nodes[0]]]
-    for element in graph[nodes[0]]:
-        if element[0] not in S[0]:
-            S[0].append(element[0])
-        for x in graph[element[0]]:
-            if x[0] not in S[0]:
-                S[0].append(x[0])
-    nodes=list(nodes)
-    for element in S[0]:
-       nodes.remove(element) #les nodes privés de S[i]
-    return S+ composante_connexe(graph,nodes)
 
 #Question 5
 
@@ -310,8 +311,8 @@ def temps_moyen(file):
             a = Graph.min_power(g, g[i], g[j])
             t2 = perf_counter()
             L.append(t2-t1)
-             S = S + t2-t1
-             i = i+1
+            S = S + t2-t1
+            i = i+1
     return S/i
 
 #Question 11
@@ -323,67 +324,6 @@ def temps_moyen(file):
 
 
 #Question 13
-    
-def kruskal(g):
-        # On va commencer par creer une liste avec des quadruplés pour toutes les arretes du graph
-        arretes=g.edges
-        d = {}
-        for liste in arretes:
-            a= tuple(liste[:2])
-            if a not in d:
-                d[a] = liste
-        resultat = list(d.values())
-        arretes = resultat
-        nb_nodes = g.nb_nodes
-        # On ordonne les arretes selon leur poids de façon croissante
-        arretes.sort(key = lambda x :x[2] )
-        a=1
-         # A est une liste qui contiendra toutes les arretes de l'arbe couvrant
-         # S est une liste qui contiendra tout les sommets
-        A=[]
-        S=[]
-        liste_aretes=[]
-        for x in arretes : 
-            if (x[0] not in S) and (x[1] in S):
-                S.append(x[0])
-                A.append(x)
-                liste_aretes.append(tuple(x[:2]))
-            elif (x[0] in S) and (x[1] not in S):
-                S.append(x[1])
-                A.append(x)
-                liste_aretes.append(tuple(x[:2]))
-            elif (x[0] not in S) and (x[1] not in S):
-                S.append(x[0])
-                S.append(x[1])
-                A.append(x)
-                liste_aretes.append(tuple(x[:2]))
-            elif  (x[0] in S) and (x[1] in S):
-                for sommet in S:
-                    if ((x[0],sommet) in liste_aretes)and((x[1],sommet) in liste_aretes):
-                        a=0
-                        break#pas besoin de voir sur les autres sommets
-                    elif((sommet,x[0]) in liste_aretes)and((x[1],sommet) in liste_aretes):
-                        a=0
-                        break#pas besoin de voir sur les autres sommets
-                    elif((x[0],sommet) in liste_aretes)and((sommet,x[1]) in liste_aretes):
-                        a=0
-                        break #pas besoin de voir sur les autres sommets
-                    elif((sommet,x[0]) in liste_aretes)and((sommet,x[1]) in liste_aretes):
-                        a=0
-                        break #pas besoin de voir sur les autres sommets
-                    else:
-                        a=1
-                if a==1:
-                    A.append(x)
-                    liste_aretes.append(tuple(x[:2]))
-        # Pour finir il reste de convertir la liste des arretes de l'arbre couvrant en un graph pour le retourner            
-        g_mst={}
-        for m in S : 
-            g_mst[m]=[]
-        for m in A :
-            g_mst[m[0]].append((m[1],m[2],m[3]))
-            g_mst[m[1]].append((m[0],m[2],m[3]))
-        return(g_mst)
 
 #Question 15
 
@@ -405,3 +345,33 @@ def nouveau_temps_moyen(file):
                     S = S + t2-t1
                     i = i+1
     return S/i
+def kruskal(g):
+    """
+    Construction de l'arbre couvrant minimum à l'aide de l'algorithme de Kruskal
+    Les paramètres sont :
+        - Les arcs du graphe au format (début, fin, longueur)
+        - Le nombre de sommets dans le graph
+    """
+    edges=g.edges
+    edges.sort(key=lambda x: x[2])
+    Arbre_couvrant =Graph([])
+    ed = EnsembleDisjoint(g)
+    index = 0
+    while Arbre_couvrant.nb_edges!= g.nb_nodes - 1:
+
+        (src, dest, weight,dist) = edges[index]
+        index = index + 1
+
+        x = ed.get_parent(src)
+        y = ed.get_parent(dest)
+
+        if x != y:
+            Arbre_couvrant.add_edge(src, dest, weight,dist)
+            ed.Union(x, y)
+    return Arbre_couvrant
+
+def le_plus_petit_encetre_commun(v1,v2,arbre_couvrant):
+    liste_precedent=[]
+    
+
+    
