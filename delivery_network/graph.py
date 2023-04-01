@@ -406,6 +406,63 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     #determination du power min
     puissance_min=max(node[1]for node in chemin)
     return puissance_min,chemin
+
+
+#Question 1 séance4:
+def maximiser_profit_cout(liste_camions,liste_trajets):
+    
+    '''---input---
+    liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
+    liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
+    ---outpout---
+    dictionnaire qui comporte chaque aretes associé au rapport profit/cout maximal
+    ainsi que le caion associé à ce rapport'''
+    dict_profit_cout={}#ce dictionnaire va contenir chaque trajet avec un rapport profit-cout maximal et le camion qui verifie ce rapport 
+    #liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
+    #liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
+    """"je vais definir une liste de puissance minimale de chaque trajet"""
+    puissance_min_trajets={trajet:puissance_minimale(trajet)for trajet in liste_trajets}
+    for trajet in liste_trajets:
+        profit_trajet=trajet[2]
+        max_profit_cout=0
+        for camion in liste_camions:
+            puissance_camion=camion[1]
+            cout_camion=camion[2]
+            if puissance_camion>=puissance_min_trajets[trajet]:
+                if (profit_trajet/cout_camion)>max_profit_cout:
+                    max_profit_cout=profit_trajet/cout_camion
+                    dict_profit_cout[trajet]=[max_profit_cout,camion]
+    return dict_profit_cout
+def liste_trajet_camion_convenable(liste_trajets,liste_camions,Budget):
+    """"outpout
+    --------------
+    liste_finale: la liste des trajets avec les camion correspondants 
+    elle est sous la forme [(trajet,[rapport_amx,camion_correspondant à ce trajet])]
+    cout_totale: c'est le cout qu_on a dépensé <=B 
+    profit_totale:le profit qu'on a obtenu"""
+    dict_profit_cout=maximiser_profit_cout(liste_camions,liste_trajets)
+    liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
+
+    #liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_amx,camion])]
+    
+    liste_finale=[]#c'est juste un troncation de la liste_trajet_profit_cout_triée
+    cout_totale=0
+    profit_totale=0
+    i=0 #indice d'itération
+    while cout_totale<=Budget:
+        liste_finale.append(liste_trajet_profit_cout_triée[i])
+        camion=liste_trajet_profit_cout_triée[i][1][1]
+        cout_camion=camion[2]
+        cout_totale=cout_camion+cout_totale
+        rapport_max=liste_trajet_profit_cout_triée[i][1][0]
+        profit_totale+=rapport_max*cout_camion
+        i+=1
+    if cout_totale>Budget:
+        cout_totale=cout_totale-cout_camion   #on retire le cout du dernier camion ajouté
+        profit_totale=profit_totale-rapport_max*cout_camion  #on retire le profit du dernier trajet ajouté
+        liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
+        
+    return liste_finale,cout_totale,profit_totale
             
 
     
