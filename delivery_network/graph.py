@@ -359,11 +359,6 @@ def kruskal(g):
             Arbre_couvrant.add_edge(src, dest, weight,dist)
             ed.Union(x, y)
     return Arbre_couvrant
-
-def le_plus_petit_encetre_commun(root,src,dest,arbre_couvrant):
-    liste_antécédent_v1=[v1]
-    pile=[root]
-    for element in 
 def profondeur (root,arbre_couvrant):
     """ça retourne un dictionnaire {'sommet':profondeur}"""
     visited_nodes={node:False for node in arbre_couvrant.nodes}
@@ -409,7 +404,7 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     chemin=liste_src+liste_dest
     #le chemin est donc liste_src+liste_dest
     #determination du power min
-    puissance_min=min(noode[1]for node in chemin)
+    puissance_min=max(node[1]for node in chemin)
     return puissance_min,chemin
             
 
