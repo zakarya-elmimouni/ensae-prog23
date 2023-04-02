@@ -434,12 +434,12 @@ def maximiser_profit_cout(liste_camions,liste_trajets):
                     dict_profit_cout[trajet]=[max_profit_cout,camion]
     return dict_profit_cout
 def liste_trajet_camion_convenable(liste_trajets,liste_camions,Budget):
-    """"outpout
+    """"output
     --------------
     liste_finale: la liste des trajets avec les camion correspondants 
-    elle est sous la forme [(trajet,[rapport_amx,camion_correspondant à ce trajet])]
-    cout_totale: c'est le cout qu_on a dépensé <=B 
-    profit_totale:le profit qu'on a obtenu"""
+    elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
+    cout_total: c'est le cout qu_on a dépensé <=B 
+    profit_total:le profit qu'on a obtenu"""
     dict_profit_cout=maximiser_profit_cout(liste_camions,liste_trajets)
     liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
 
@@ -463,6 +463,16 @@ def liste_trajet_camion_convenable(liste_trajets,liste_camions,Budget):
         liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
         
     return liste_finale,cout_totale,profit_totale
+
+
+#une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
+#par exemple si un camion est de puissance petite alors que sont cout est grand
+#la meme chose pour un trajet 
+# si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
+def iliminer_element_inutiles(liste_camions,liste_trajets):
+    #liste_camions a la meme forme [(camion,puissance,cout)]
+    #liste_trajets a aussi la meme forme:
+
             
 
     
