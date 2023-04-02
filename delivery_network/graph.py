@@ -447,8 +447,6 @@ def get_precedent(graph,depart,arrivée,power):
 # ==> Contradiction
 
 
-#Question 13
-
 #Question 15
 
 # Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal qui calcule la puissance minimale d'un camion pour couvrir un trajet donné est donc de O(U.log (V))("ce lui du tri rapide de kruskal") + O(U+V), qui est équivalent à O(U.log(V)), où U est le nombre d'arretes et V le nombre de sommets(ou noeuds)
