@@ -1,5 +1,6 @@
 from time import perf_counter
 from random import randint
+from graphviz import Digraph"
 class EnsembleDisjoint:
     """
     Cette classe permet de gérer les ensmebles disjoints. Deux éléments sont
@@ -117,7 +118,7 @@ class Graph:
             path.reverse()
             return path
 
-        # la complexité de get_path_with_power est la même que la complexité de la fonction get_precedent
+        # La complexité de get_path_with_power est la même que la complexité de la fonction get_precedent
         # C'est une complexité de l'ordre O(V**2) , avec V le nombre de sommets.
            
 #Question 5 : le chemin le plus court 
@@ -135,9 +136,10 @@ class Graph:
             path.append(src)
             path.reverse()
             return path,distance[dest]
-#un pont à améliorer dans ce programme c'est de faire un teste de composante connxe au début
-#si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
-#dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
+#Un point à améliorer dans ce programme c'est de faire un teste de composante connxe au début
+#Si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
+#Dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
+# La complexité de cet algorithme : 
     
     def connected_components(self):
         composantes_connexes=[]
@@ -159,8 +161,8 @@ class Graph:
     
     #Question 6
 
-    # le programme de la question 6 est basée sur une recherche dichotomique
-    #début 0 et fin égale au max des puissances des arretes
+    #Le programme de la question 6 est basée sur une recherche dichotomique
+    #Début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
         if self.get_path_with_power(src,dest,float('inf'))!=None:
             self.power.sort()
@@ -176,14 +178,37 @@ class Graph:
             return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
     
+
+    #Question 7 
+
+    def graphique(self,src,dest) :
+
+        L , n = min_power(self, src, dest)
+         # Création du graphe avec Graphviz
+        dot = Digraph()
+        for node in self.graph:
+            dot.node(str(node))
+        for node in self.graph:
+            for edge in self.graph[node]:
+                d
+                dot.edge(str(node), str(edge[0]), label=str(edge[1]))
+
+        # Affichage du graphe
+        dot.render('graph')
+
+
+
+
     #Question 14
     
-    def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+    def puissance_min(self,src,dest):
+        #recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
         arbre_couvrant=kruskal(self.graph)
         power=[]
-        for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
+        for sommet in arbre_couvrant.keys():
+            #recherche de la puissance maximale des arretes
             for voisin in arbre_couvrant[sommet]:
                 power.append(voisin[1])
                   #récuperation du maximum
@@ -203,16 +228,19 @@ class Graph:
 
 
 #Question 5
-#recherche du chemin le plus court à l'aide de dijkstra
-#algorithme de dijikstra
-#graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
+
+#Recherche du chemin le plus court à l'aide de dijkstra
 def dijkstra(graph,source,puissance_camion):
-        precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
-        dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
-        distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
-        distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
-        a_traiter = [(0, source)]#il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
-        while a_traiter:#tant qu'il a des element à traiter on va parcourir la boucle
+        precedent = {x:None for x in graph.keys()}
+        #les précedents des sommets dans le trajet minimal
+        dejaTraite = {x:False for x in graph.keys()}
+        #l'element est déja traité? False ou True
+        distance =  {x:float('inf') for x in graph.keys()}
+        #la distance de l'origine à chaque sommet
+        distance[source] = 0 #initialisation 
+        a_traiter = [(0, source)]
+        #il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
+        while a_traiter: #tant qu'il a des element à traiter on va parcourir la boucle
         # on fait parcours en larguer : une fois un element et traité on parcourt ses voisins et puis les voisins des voisins etc...
             dist_noeud, noeud = a_traiter.pop()
             if not dejaTraite[noeud]:
@@ -226,7 +254,7 @@ def dijkstra(graph,source,puissance_camion):
                             a_traiter.append((dist_voisin, voisin[0]))
             a_traiter.sort(reverse=True)
         return distance, precedent
-
+    # La complexité de l'algorithme Djikstra est de :O((nb_nodes + nb_edges)log(nb_nodes))
 
 # Question 3 (suite)
 def get_precedent(graph,depart,arrivée,power):
@@ -241,7 +269,7 @@ def get_precedent(graph,depart,arrivée,power):
             if voisin[1]<=power:
                 precedent[voisin[0]]=sommet
                 visited_nodes[voisin[0]]=True
-                if voisin[0] ==arrivée:
+                if voisin[0] == arrivée:
                     return precedent
                 else:
                     pile.append(voisin[0])
@@ -278,7 +306,10 @@ def temps_moyen(file1,file2):
 
 #Question 15
 
-# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal qui calcule la puissance minimale d'un camion pour couvrir un trajet donné est donc de O(U.log (V))("ce lui du tri rapide de kruskal") + O(U+V), qui est équivalent à O(U.log(V)), où U est le nombre d'arretes et V le nombre de sommets(ou noeuds)
+# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal 
+# qui calcule la puissance minimale d'un camion pour couvrir un trajet donné 
+# est donc de O(nb_edges.log (nb_nodes))("ce lui du tri rapide de kruskal") + O(nb_edges+nb_nodes), 
+# qui est équivalent à O(nb_edges.log(nb_nodes))
 
 def nouveau_temps_moyen(file1,file2):
     g = graph_from_file(file1)
@@ -322,6 +353,8 @@ def kruskal(g):
             Arbre_couvrant.add_edge(src, dest, weight,dist)
             ed.Union(x, y)
     return Arbre_couvrant
+
+
 
 def le_plus_petit_encetre_commun(root,src,dest,arbre_couvrant):
     liste_antécédent_v1=[v1]
@@ -437,7 +470,7 @@ def collection(file1, file2,file3):
         while a < W[i][2]:
             j=j+1
             a=T[j][1]
-        R[i]=[W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][0],T[j][1],T[j][2]]
+        R[i]=[W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][1],T[j][2]]
 
     
     
