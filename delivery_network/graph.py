@@ -200,47 +200,7 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,power[milieu]),power[debut]
         raise Exception('pas de chemin')
-    
-#Question 1 (suite)
-        
-def graph_from_file(filename):
-    """
-    Reads a text file and returns the graph as an object of the Graph class.
 
-    The file should have the following format: 
-        The first line of the file is 'n m'
-        The next m lines have 'node1 node2 power_min dist' or 'node1 node2 power_min' (if dist is missing, it will be set to 1 by default)
-        The nodes (node1, node2) should be named 1..n
-        All values are integers.
-
-    Parameters: 
-    -----------
-    filename: str
-        The name of the file
-
-    Outputs: 
-    -----------
-    g: Graph
-        An object of the class Graph with the graph from file_name.
-    """
-    with open(filename, "r") as file:
-        n, m = map(int, file.readline().split())
-        g = Graph(range(1, n+1))
-        for _ in range(m):
-            edge = list(map(int, file.readline().split()))
-            if len(edge) == 3:
-                node1, node2, power_min = edge
-                g.add_edge(node1, node2, power_min) # will add dist=1 by default
-                g.power.append(power_min)
-                g.edges.append((node1,node2,power_min,1))
-            elif len(edge) == 4:
-                node1, node2, power_min, dist = edge
-                g.add_edge(node1, node2, power_min, dist)
-                g.power.append(power_min)
-                g.edges.append((node1, node2, power_min, dist))
-            else:
-                raise Exception("Format incorrect")
-    return g
 
 #Question 5
 #recherche du chemin le plus court à l'aide de dijkstra
@@ -292,15 +252,18 @@ def get_precedent(graph,depart,arrivée,power):
 
 def temps_moyen(file1,file2):
     g = graph_from_file(file1)
-    L= file2.split()
-    M = int(L[0])//10
+    L, n = way_from_file(file2)
+    Times = []
+    M = n//10
     i = 0
-    j=1
     S=0
     while i < M :
             t1 = perf_counter()
-            a = Graph.min_power(g, L[j], K[j+1])
+            a = Graph.puissance_min(g, L[i][0], L[i][1])
             t2 = perf_counter()
+            Times.append(t2-t1)
+            S = S + (t2-t1)
+            i = i+1
     return S/i
 
 #Question 11
@@ -317,24 +280,24 @@ def temps_moyen(file1,file2):
 
 # Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal qui calcule la puissance minimale d'un camion pour couvrir un trajet donné est donc de O(U.log (V))("ce lui du tri rapide de kruskal") + O(U+V), qui est équivalent à O(U.log(V)), où U est le nombre d'arretes et V le nombre de sommets(ou noeuds)
 
-def nouveau_temps_moyen(file):
-    g = graph_from_file(file)
-    K= g.keys()
-    a=len(K)
+def nouveau_temps_moyen(file1,file2):
+    g = graph_from_file(file1)
+    g_mst= kruskal(g)
+    L, n = way_from_file(file2)
+    Times = []
+    M = n//10
     i = 0
-    L=[]
     S=0
-    while i < 31 :
-        n= randint(0, a-1)
-        m= randint(0,a-1)
-        if n!=m :
+    while i < M :
             t1 = perf_counter()
-            a = Graph.puissance_min(g, K[n],K[m])
+            a = Graph.puissance_min(g_mst, L[i][0], L[i][1])
             t2 = perf_counter()
-            L.append(t2-t1)
-            S = S + t2-t1
+            Times.append(t2-t1)
+            S = S + (t2-t1)
             i = i+1
     return S/i
+
+
 def kruskal(g):
     """
     Construction de l'arbre couvrant minimum à l'aide de l'algorithme de Kruskal
@@ -363,7 +326,6 @@ def kruskal(g):
 def le_plus_petit_encetre_commun(root,src,dest,arbre_couvrant):
     liste_antécédent_v1=[v1]
     pile=[root]
-    for element in 
 def profondeur (root,arbre_couvrant):
     """ça retourne un dictionnaire {'sommet':profondeur}"""
     visited_nodes={node:False for node in arbre_couvrant.nodes}
@@ -413,7 +375,77 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     return puissance_min,chemin
             
 
+#Question 1 (suite)
+        
+def graph_from_file(filename):
     
+    with open(filename, "r") as file:
+        n, m = map(int, file.readline().split())
+        g = Graph(range(1, n+1))
+        for _ in range(m):
+            edge = list(map(int, file.readline().split()))
+            if len(edge) == 3:
+                node1, node2, power_min = edge
+                g.add_edge(node1, node2, power_min) # will add dist=1 by default
+                g.power.append(power_min)
+                g.edges.append((node1,node2,power_min,1))
+            elif len(edge) == 4:
+                node1, node2, power_min, dist = edge
+                g.add_edge(node1, node2, power_min, dist)
+                g.power.append(power_min)
+                g.edges.append((node1, node2, power_min, dist))
+            else:
+                raise Exception("Format incorrect")
+    return g
+
+def way_from_file(filename):
+    with open(filename,"r") as file : 
+        n= int(file.readline())
+        W = []
+        for _ in range(n):
+            way = list(map(int,file.readline().split()))
+            if len(way)== 3 :
+                W.append(way)
+            else : 
+                raise Exception("Format incorrect")
+    return W , n
+
+def trucks_from_file(filename): 
+    with open(filename,"r") as file :
+        n= int(file.readline())
+        T=[]
+        for i in range(n):
+            truck = list(map(int,file.readline().split()))
+            if len(truck) == 2 :
+                T.append([i+1,truck[0],truck[1]])
+            else :
+                raise Exception("Format incorrect")
+    return T
+
+def collection(file1, file2,file3):
+    G = graph_from_file(file1)
+    W,n = way_from_file(file2)
+    T = trucks_from_file(file3)
+    for i in range(len(W)) :
+        L,a = G.puissance_min(W[0], W[1])
+        W[i]= [W[i][0],W[i][1],a,W[i][2]]
+    T.sort(key = lambda x :x[2] )
+    for i in range(len(W)):
+        R = []*len(W)
+        a = T[0][1]
+        j=0
+        while a < W[i][2]:
+            j=j+1
+            a=T[j][1]
+        R[i]=[W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][0],T[j][1],T[j][2]]
+
+    
+    
+        
+
+        
+        
+        
 
 
 
