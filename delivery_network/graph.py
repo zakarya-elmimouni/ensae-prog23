@@ -176,7 +176,18 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
         raise Exception('pas de chemin')
-    
+     #Question 7 
+
+    def graphique(self) :
+         # Création du graphe avec Graphviz
+        dot = diagraph()
+        for node in self.graph:
+            dot.node(str(node))
+        for node in self.graph:
+            for edge in self.graph[node]:
+                dot.edge(str(node), str(edge[0]), label=str(edge[1]))
+        # Affichage du graphe
+        dot.render('graph')
     #Question 14
     
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
@@ -262,11 +273,23 @@ class Graph:
 #par exemple si un camion est de puissance petite alors que sont cout est grand
 #la meme chose pour un trajet 
 # si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
-    def iliminer_element_inutiles(liste_camions,liste_trajets):
+    def iliminer_elements_inutiles(liste_camions,liste_trajets):
     #liste_camions a la meme forme [(camion,puissance,cout)]
     #liste_trajets a aussi la meme forme:
-        liste_camion_trié_puissance=sorted(liste_camions,key=lambda x:x[1],reverse=True)
-        liste_camion_trié_cout=sorted(liste_camions,key=lambda x:x[2],reverse=True)
+        for i in range (len(liste_camions)):
+            for j in range (i,len(liste_camions)):
+                camion1=liste_camions[i]
+                camion2=liste_camions[j]
+                cout1=camion1[2]
+                cout2=camion2[2]
+                puissance1=camion1[1]
+                puissance2=camion2[1]
+                if cout1<=cout2 and puissance1>=puissance2:
+                    liste_camions.remove()
+
+
+
+
 
 #Question 10
 
@@ -279,12 +302,12 @@ def temps_moyen(file1,file2):
     i = 0
     S=0
     while i < M :
-            t1 = perf_counter()
-            a = Graph.puissance_min(g, L[i][0], L[i][1])
-            t2 = perf_counter()
-            Times.append(t2-t1)
-            S = S + (t2-t1)
-            i = i+1
+        t1 = perf_counter()
+        a = Graph.puissance_min(g, L[i][0], L[i][1])
+        t2 = perf_counter()
+        Times.append(t2-t1)
+        S = S + (t2-t1)
+        i = i+1
     return S/i
 
 #Question 11
@@ -318,14 +341,13 @@ def nouveau_temps_moyen(file1,file2):
     i = 0
     S=0
     while i < M :
-            t1 = perf_counter()
-            a = Graph.puissance_min(g_mst.graph, L[i][0], L[i][1])
-            t2 = perf_counter()
-            Times.append(t2-t1)
-            S = S + (t2-t1)
-            i = i+1
-    return S/i​
-
+        t1 = perf_counter()
+        a = Graph.puissance_min(g_mst.graph, L[i][0], L[i][1])
+        t2 = perf_counter()
+        Times.append(t2-t1)
+        S = S + (t2-t1)
+        i = i+1
+    return S/i 
 #Question 1 (suite)
         
 def graph_from_file(filename):
