@@ -157,7 +157,12 @@ class Graph:
             if not visited_nodes[s]:
                 composantes_connexes.append(deep_parcours(s))
         return composantes_connexes
-    
+    def connected_components_set(self):
+        """
+        The result should be a set of frozensets (one per component), 
+        For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
+        """
+        return set(map(frozenset, self.connected_components()))
     #Question 6
 
     # le programme de la question 6 est basée sur une recherche dichotomique

@@ -12,7 +12,7 @@ class Test_MST(unittest.TestCase):
         liste_camions=trucks_from_file("input/trucks.3.in")
         Budget=10
         resultat=g.liste_trajet_camion_convenable(liste_routes,liste_camions,Budget)
-        result_expected =([((1, 2, 3),(1, 2, 10)),((1, 2, 3),(1, 4, 5)) ], 6, 15.0)
+        result_expected =([((1, 2, 3),(1, 2, 10)),((1, 2, 3),(1, 4, 5))], 6, 15.0)
         self.assertEqual(resultat,result_expected)
     def test_route12(self):
         g=graph_from_file("input/network.12.in")
