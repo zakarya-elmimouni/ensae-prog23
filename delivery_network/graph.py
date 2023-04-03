@@ -103,6 +103,23 @@ class Graph:
     
     def get_path_with_power(self,src, dest, power):
 # un petit developpement de la fonction get_precedent pour avoir le chemin
+        def get_precedent(graph,depart,arrivée,power):
+            precedent={x:None for x in graph.keys()}
+            visited_nodes={x:False for x in graph.keys()}
+            pile=[depart]
+            visited_nodes[depart]=True
+            while pile:
+                sommet=pile.pop()
+                liste_nouveau_sommets_voisins=[voisin for voisin in graph[sommet]if not visited_nodes[voisin[0]]]
+                for voisin in liste_nouveau_sommets_voisins:
+                    if voisin[1]<=power:
+                        precedent[voisin[0]]=sommet
+                        visited_nodes[voisin[0]]=True
+                        if voisin[0] ==arrivée:
+                            return precedent
+                        else:
+                            pile.append(voisin[0])
+            return precedent
         precedent=get_precedent(self.graph,src,dest,power)
         depart=src
         arrivée=dest
@@ -198,7 +215,8 @@ class Graph:
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         fin=0
         debut=0
-        arbre_couvrant=kruskal(self.graph)
+        arbre_couvrant=kruskal(self)
+        arbre_couvrant=arbre_couvrant.graph
         power=[]
         for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
             for voisin in arbre_couvrant[sommet]:
@@ -230,7 +248,13 @@ class Graph:
     #liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
     #liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
         """"je vais definir une liste de puissance minimale de chaque trajet"""
-        puissance_min_trajets={trajet:self.puissance_min(trajet)for trajet in liste_trajets}
+        #puissance_min_trajets={trajet:self.puissance_min(trajet[0],trajet[1])[1]for trajet in liste_trajets}
+        puissance_min_trajets={}
+        for trajet in liste_trajets:
+            depart=trajet[0]
+            arrivée=trajet[1]
+            puissance_min_trajets[trajet]=self.puissance_min(depart,arrivée)[1]
+
         for trajet in liste_trajets:
             profit_trajet=trajet[2]
             max_profit_cout=0
@@ -273,7 +297,8 @@ class Graph:
             output_liste=[]#Une liste sous la forme [(camion,trajet)]
             for element in liste_finale:
                 output_liste.append((element[1][1],element[0]))
-        return output_liste,cout_totale,profit_totale
+            set(map(frozenset,output_liste ))
+        return set(map(frozenset,output_liste )),cout_totale,profit_totale
     #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
 #par exemple si un camion est de puissance petite alors que sont cout est grand
 #la meme chose pour un trajet 
@@ -293,9 +318,6 @@ class Graph:
                 if cout1<=cout2 and puissance1>=puissance2:
                     liste_camions.remove()
         return nb_initial_camions,len(liste_camions),liste_camions
-
-
-
 
 
 #Question 10
