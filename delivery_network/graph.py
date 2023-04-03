@@ -1,6 +1,6 @@
 from time import perf_counter
 from random import randint
-from graphviz import diagraph
+from graphviz import Digraph
 class EnsembleDisjoint:
     """
     Cette classe permet de gérer les ensmebles disjoints. Deux éléments sont
@@ -180,7 +180,7 @@ class Graph:
 
     def graphique(self) :
          # Création du graphe avec Graphviz
-        dot = diagraph()
+        dot = Digraph()
         for node in self.graph:
             dot.node(str(node))
         for node in self.graph:
@@ -276,6 +276,7 @@ class Graph:
     def iliminer_elements_inutiles(liste_camions,liste_trajets):
     #liste_camions a la meme forme [(camion,puissance,cout)]
     #liste_trajets a aussi la meme forme:
+        nb_initial_camions=len(liste_camions)
         for i in range (len(liste_camions)):
             for j in range (i,len(liste_camions)):
                 camion1=liste_camions[i]
@@ -286,6 +287,7 @@ class Graph:
                 puissance2=camion2[1]
                 if cout1<=cout2 and puissance1>=puissance2:
                     liste_camions.remove()
+        return nb_initial_camions,len(liste_camions),liste_camions
 
 
 
@@ -535,7 +537,7 @@ def profondeur (root,arbre_couvrant):
     return profondeur,peres
 
 def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
-    peres,profondeurs=profondeurs(root,arbre_couvrant):
+    peres,profondeurs=profondeurs(root,arbre_couvrant)
     liste_ancetres_src=[src]
     liste_ancetres_dest=[dest]
     element=src
