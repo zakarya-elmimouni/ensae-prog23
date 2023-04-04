@@ -1,0 +1,7 @@
+import sys 
+sys.path.append("delivery_network")
+
+
+from graph import graph_from_file
+g = graph_from_file("input/network.04.in")
+print(g)
