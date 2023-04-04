@@ -19,6 +19,5 @@ class Test_MST(unittest.TestCase):
 
 print(graph_from_file("input/network.04.in"))
     
-
 if __name__ == '__main__':
     unittest.main()
