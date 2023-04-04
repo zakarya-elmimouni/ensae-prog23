@@ -139,7 +139,7 @@ class Graph:
         # C'est une complexité de l'ordre O(V**2) , avec V le nombre de sommets.
            
 #Question 5 : le chemin le plus court 
-    def plus_court_chemin(graph,src, dest, power):
+    def plus_court_chemin(self,src, dest, power):
         distance, precedent=dijkstra(self.graph,src,power)
     
         if distance[dest]== "inf":
@@ -233,7 +233,7 @@ class Graph:
                 else:
                     debut=milieu+1
                 milieu=(debut+fin)//2
-            return self.get_path_with_power(src,dest,power[milieu]),power[debut]
+            return self.get_path_with_power(src,dest,power[milieu]),power[milieu]
         raise Exception('pas de chemin')
     #Question 1 séance4:
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
@@ -253,8 +253,8 @@ class Graph:
         for trajet in liste_trajets:
             depart=trajet[0]
             arrivée=trajet[1]
-            puissance_min_trajets[trajet]=self.puissance_min(depart,arrivée)[1]
-
+            liste,puissance_min=self.puissance_min(depart,arrivée)
+            puissance_min_trajets[trajet]=puissance_min
         for trajet in liste_trajets:
             profit_trajet=trajet[2]
             max_profit_cout=0
@@ -282,7 +282,7 @@ class Graph:
         cout_totale=0
         profit_totale=0
         i=0 #indice d'itération
-        while cout_totale<=Budget:
+        while cout_totale<=Budget and i<len(liste_trajet_profit_cout_triée):
             liste_finale.append(liste_trajet_profit_cout_triée[i])
             camion=liste_trajet_profit_cout_triée[i][1][1]
             cout_camion=camion[2]
@@ -294,11 +294,11 @@ class Graph:
             cout_totale=cout_totale-cout_camion   #on retire le cout du dernier camion ajouté
             profit_totale=profit_totale-rapport_max*cout_camion  #on retire le profit du dernier trajet ajouté
             liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
-            output_liste=[]#Une liste sous la forme [(camion,trajet)]
-            for element in liste_finale:
-                output_liste.append((element[1][1],element[0]))
-            set(map(frozenset,output_liste ))
-        return set(map(frozenset,output_liste )),cout_totale,profit_totale
+        output_liste=[]#Une liste sous la forme [(camion,trajet)]
+        for element in liste_finale:
+            output_liste.append((element[1][1],element[0]))
+        
+        return frozenset(output_liste),cout_totale,profit_totale
     #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
 #par exemple si un camion est de puissance petite alors que sont cout est grand
 #la meme chose pour un trajet 
@@ -423,6 +423,7 @@ def way_from_file(filename):
         W = []
         for _ in range(n):
             way = list(map(int,file.readline().split()))
+            way=tuple(way)
             if len(way)== 3 :
                 W.append(way)
             else : 
@@ -435,8 +436,9 @@ def trucks_from_file(filename):
         T=[]
         for i in range(n):
             truck = list(map(int,file.readline().split()))
+            truck=tuple(truck)
             if len(truck) == 2 :
-                T.append([i+1,truck[0],truck[1]])
+                T.append((i+1,truck[0],truck[1]))
             else :
                 raise Exception("Format incorrect")
     return T
