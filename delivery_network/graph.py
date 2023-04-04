@@ -212,47 +212,140 @@ class Graph:
                 milieu=(debut+fin)//2
             return self.get_path_with_power(src,dest,power[milieu]),power[debut]
         raise Exception('pas de chemin')
-    #Question 1 séance4:
+
+
+    #Question 1 Séance 4 :
+
+    #Manière 1 : Brute force
+
+
+    # On définira une fonction qui retourne une liste avec tous les trajets et le meilleur camion associé
+    # Le meilleur camion qu'on peut associer à chaque trajet est évidement un camion qui peut passer
+    # Et dont le coût est minimal
+    def collection(self,liste_trajets,liste_camions):
+        G = self.graph
+        W = liste_trajets
+        T = liste_camions
+        for i in range(len(W)) :
+             L,a = G.puissance_min(W[0], W[1])
+             W[i]= [W[i][0],W[i][1],a,W[i][2]]
+        # On trie les camions selon la 2 ème variable (le coût)
+        T.sort(key = lambda x :x[2] )
+        for i in range(len(W)):
+             R = []*len(W)
+             b = T[0][1]
+             j=0
+             # On cherche le premier qui peut passer et dont le coût est le plus petit
+             while b < W[i][2]:
+                 j=j+1
+                 b=T[j][1]
+             R[i]=[W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][1],T[j][2]]
+
+        return R
+
+
+    # Nous allons définir une fonction intermédiaire qui retourne toutes les parties d'un ensemble
+    # En l'occurence ici ça sera une liste et on retournera une liste avec toutes les parties (P(E))
+    def partiesliste(L):
+
+        P = []
+        i, i_max = 0, 2**len(L)-1
+        while i <= i_max:
+             s = []
+             j, j_max = 0, len(L)-1
+             while j <= j_max:
+                 if (i>>j)&1 == 1:
+                     s.append(L[j])
+                 j += 1
+             P.append(s)
+             i += 1 
+        return P
+
+    # On cherche maintenant à trouver la combinaison de trajets qui soit optimale
+    def liste_trajet_camion_convenable_0(self,liste_trajets,liste_camions,Budget):
+
+        R = self.collection(self,liste_trajets,liste_camions)
+        P = self.partiesliste(R)
+        T = []
+        # Nous allons calculer l'utilité totale pour toutes les parties de notre listes ( 2**len(L))
+        for i in range(1,len(P)) :
+            u = 0
+            c = 0
+            L=P[i]
+            # On regarde les combinaisons de trajets dont les camions vérifie la contrainte de budget
+            for j in range(len(L)) : 
+                B = L[j]
+                c = c + B[6]
+                u = u + B[3]
+            if c <= Budget :
+                L.append(u)
+                L.append(c)
+                T.append(L)
+            # On trie les différentes combinaisons selon l'utilité totale en ordre décroissant
+            T.sort(key = lambda x :x[2] , reverse=True)
+            return T[0]
+            
+
+    #Manière 2 : Sac à dos
+
+    
+
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
     
-        '''---input---
-    liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
+         '''           ---input---
+        Liste_camions va etre une liste ayant la forme [(camion,puissance,cout)]
     liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
-    ---outpout---
-    dictionnaire qui comporte chaque aretes associé au rapport profit/cout maximal
-    ainsi que le caion associé à ce rapport'''
-        dict_profit_cout={}#ce dictionnaire va contenir chaque trajet avec un rapport profit-cout maximal et le camion qui verifie ce rapport 
-    #liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
-    #liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
-        """"je vais definir une liste de puissance minimale de chaque trajet"""
+                       ---outpout---
+        Dictionnaire qui comporte chaque aretes associé au rapport profit/cout maximal
+    ainsi que le caion associé à ce rapport
+    
+                                 
+                                            '''
+        dict_profit_cout={}
+        # Nous allons définir une liste de puissance minimale de chaque trajet"""
+
         puissance_min_trajets={trajet:self.puissance_min(trajet)for trajet in liste_trajets}
+
         for trajet in liste_trajets:
             profit_trajet=trajet[2]
             max_profit_cout=0
+
             for camion in liste_camions:
                 puissance_camion=camion[1]
                 cout_camion=camion[2]
+
+                # On vérifie si notre camion peut bien passer par le trajet
                 if puissance_camion>=puissance_min_trajets[trajet]:
+
+                    # Puis on regarde le camion avec le plus grand rapport profit_coût
+                    # (càd le plus petit coût)
                     if (profit_trajet/cout_camion)>max_profit_cout:
                         max_profit_cout=profit_trajet/cout_camion
                         dict_profit_cout[trajet]=[max_profit_cout,camion]
+
         return dict_profit_cout
-    def liste_trajet_camion_convenable(self,liste_trajets,liste_camions,Budget):
-        """"output
-    --------------
+
+    def liste_trajet_camion_convenable_1(self,liste_trajets,liste_camions,Budget):
+
+
+    """"                           output
+                               --------------
     liste_finale: la liste des trajets avec les camion correspondants 
     elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
     cout_total: c'est le cout qu_on a dépensé <=B 
-    profit_total:le profit qu'on a obtenu"""
+    profit_total:le profit qu'on a obtenu                                        """
+
         dict_profit_cout=self.maximiser_profit_cout(liste_camions,liste_trajets)
         liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
 
-    #liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_amx,camion])]
+        # Liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_amx,camion])]
     
-        liste_finale=[]#c'est juste un troncation de la liste_trajet_profit_cout_triée
+        liste_finale=[]
+        # C'est juste un troncation de la liste_trajet_profit_cout_triée
         cout_totale=0
         profit_totale=0
-        i=0 #indice d'itération
+        i=0 # indice d'itération
+
         while cout_totale<=Budget:
             liste_finale.append(liste_trajet_profit_cout_triée[i])
             camion=liste_trajet_profit_cout_triée[i][1][1]
@@ -261,22 +354,34 @@ class Graph:
             rapport_max=liste_trajet_profit_cout_triée[i][1][0]
             profit_totale+=rapport_max*cout_camion
             i+=1
+
         if cout_totale>Budget:
-            cout_totale=cout_totale-cout_camion   #on retire le cout du dernier camion ajouté
-            profit_totale=profit_totale-rapport_max*cout_camion  #on retire le profit du dernier trajet ajouté
+            cout_totale=cout_totale-cout_camion   
+            # On retire le cout du dernier camion ajouté
+            profit_totale=profit_totale-rapport_max*cout_camion 
+            # On retire le profit du dernier trajet ajouté
             liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
-            output_liste=[]#Une liste sous la forme [(camion,trajet)]
+            output_liste=[]
+            # Une liste sous la forme [(camion,trajet)]
+
             for element in liste_finale:
                 output_liste.append((element[1][1],element[0]))
+
         return output_liste,cout_totale,profit_totale
-    #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
-#par exemple si un camion est de puissance petite alors que sont cout est grand
-#la meme chose pour un trajet 
-# si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
+
+
+        # Une première amélioration qu'on pourra rajouter au code est d'éliminer certains camions,
+        # de la liste des camion à traiter
+
+
+
+    # Manière 3 : Elimination des camions inutiles
+
     def iliminer_elements_inutiles(liste_camions,liste_trajets):
-    #liste_camions a la meme forme [(camion,puissance,cout)]
-    #liste_trajets a aussi la meme forme:
+    # Nous gardons la même forme que dans les fonctions précedentes pour les deux listes de départ  
+
         nb_initial_camions=len(liste_camions)
+
         for i in range (len(liste_camions)):
             for j in range (i,len(liste_camions)):
                 camion1=liste_camions[i]
@@ -285,8 +390,10 @@ class Graph:
                 cout2=camion2[2]
                 puissance1=camion1[1]
                 puissance2=camion2[1]
+
                 if cout1<=cout2 and puissance1>=puissance2:
                     liste_camions.remove()
+                    
         return nb_initial_camions,len(liste_camions),liste_camions
 
 
