@@ -571,7 +571,7 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     liste_ancetres_src=[[src,0]]
     liste_ancetres_dest=[[dest,0]]
     element=src
-    while element!=root:
+    while element!=root: # O(V)
         liste_ancetres_src.append(peres[element])
         element=peres[element][0]
     liste_ancetres_src.append([root,0])
