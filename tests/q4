@@ -4,8 +4,7 @@ sys.path.append("delivery_network")
 
 from graph import graph_from_file,trucks_from_file,way_from_file
 g=graph_from_file("input/network.12.in")
-liste_routes = way_from_file("input/routes.12.in")
-liste_camions=trucks_from_file("input/trucks.4.in")
-Budget=15
-resultat=g.liste_trajet_camion_convenable_0(liste_routes,liste_camions,Budget)
-print(resultat)
+liste_routes = way_from_file("input/routes.03.in")
+liste_camions=trucks_from_file("input/trucks.03.in")
+liste_camions=g.iliminer_elements_inutiles(liste_camions)[2]
+print(liste_camions)

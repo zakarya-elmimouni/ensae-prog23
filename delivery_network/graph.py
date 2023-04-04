@@ -380,23 +380,45 @@ class Graph:
 #par exemple si un camion est de puissance petite alors que sont cout est grand
 #la meme chose pour un trajet 
 # si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
-    def iliminer_elements_inutiles(liste_camions,liste_trajets):
+    def iliminer_elements_inutiles(self,liste_camions):
     #liste_camions a la meme forme [(camion,puissance,cout)]
     #liste_trajets a aussi la meme forme:
         nb_initial_camions=len(liste_camions)
-        for i in range (len(liste_camions)):
-            for j in range (i,len(liste_camions)):
-                camion1=liste_camions[i]
-                camion2=liste_camions[j]
+        print(nb_initial_camions)
+        liste_initiale=liste_camions
+        for i in range (nb_initial_camions):
+            for j in range (i,nb_initial_camions):
+                camion1=liste_initiale[i]
+                camion2=liste_initiale[j]
+                print(camion1)
+                print(camion2)
                 cout1=camion1[2]
                 cout2=camion2[2]
                 puissance1=camion1[1]
                 puissance2=camion2[1]
                 if cout1<=cout2 and puissance1>=puissance2:
-                    liste_camions.remove()
+                    liste_camions.remove(camion2)
         return nb_initial_camions,len(liste_camions),liste_camions
 
-
+    #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
+#par exemple si un camion est de puissance petite alors que sont cout est grand
+#la meme chose pour un trajet 
+# si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
+def iliminer_elements_inutiles(liste_camions):
+    #liste_camions a la meme forme [(camion,puissance,cout)]
+    #liste_trajets a aussi la meme forme:
+    nb_initial_camions=len(liste_camions)
+    for i in range (len(liste_camions)):
+        for j in range (i,len(liste_camions)):
+            camion1=liste_camions[i]
+            camion2=liste_camions[j]
+            cout1=camion1[2]
+            cout2=camion2[2]
+            puissance1=camion1[1]
+            puissance2=camion2[1]
+            if cout1<=cout2 and puissance1>=puissance2:
+                liste_camions.remove()
+    return nb_initial_camions,len(liste_camions),liste_camions
 #Question 10
 
 def temps_moyen(file1,file2):
