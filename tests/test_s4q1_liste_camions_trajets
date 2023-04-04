@@ -14,6 +14,7 @@ class Test_MST(unittest.TestCase):
         resultat=g.liste_trajet_camion_convenable(liste_routes,liste_camions,Budget)
         result_expected =(frozenset({((1, 2, 3), (1, 4, 5)), ((1, 2, 3), (1, 2, 10))}), 6, 15.0)
         self.assertEqual(resultat,result_expected)  
+
     def test_route12(self):
         g=graph_from_file("input/network.12.in")
         liste_routes = way_from_file("input/routes.12.in")
