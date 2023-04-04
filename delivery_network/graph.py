@@ -245,45 +245,47 @@ class Graph:
         W = liste_trajets
         T = liste_camions
         for i in range(len(W)) :
-            L,a = self.puissance_min(W[0], W[1])
+            L,a = self.puissance_min(W[i][0], W[i][1])
             W[i]= [W[i][0],W[i][1],a,W[i][2]]
         # On trie les camions selon la 2 ème variable (le coût)
         T.sort(key = lambda x :x[2] )
+        R = []
         for i in range(len(W)):
-            R = []*len(W)
             b = T[0][1]
             j=0
              # On cherche le premier qui peut passer et dont le coût est le plus petit
             while b < W[i][2]:
                 j=j+1
                 b=T[j][1]
-            R[i]=[W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][1],T[j][2]]
+            R.append([W[i][0],W[i][1],W[i][2],W[i][3],T[j][0],T[j][1],T[j][2]])
         return R
-    # Nous allons définir une fonction intermédiaire qui retourne toutes les parties d'un ensemble
-    # En l'occurence ici ça sera une liste et on retournera une liste avec toutes les parties (P(E))
-    def partiesliste(L):
-        P = []
-        i, i_max = 0, 2**len(L)-1
-        while i <= i_max:
-            s = []
-            j, j_max = 0, len(L)-1
-            while j <= j_max:
-                if (i>>j)&1 == 1:
-                    s.append(L[j])
-                j += 1
-            P.append(s)
-            i += 1 
-        return P
+
     # On cherche maintenant à trouver la combinaison de trajets qui soit optimale
     def liste_trajet_camion_convenable_0(self,liste_trajets,liste_camions,Budget):
+            # Nous allons définir une fonction intermédiaire qui retourne toutes les parties d'un ensemble
+    # En l'occurence ici ça sera une liste et on retournera une liste avec toutes les parties (P(E))
+        def partiesliste(L):
+            P = []
+            i, i_max = 0, 2**len(L)-1
+            while i <= i_max:
+                s = []
+                j, j_max = 0, len(L)-1
+                while j <= j_max:
+                    if (i>>j)&1 == 1:
+                        s.append(L[j])
+                    j += 1
+                P.append(s)
+                i += 1 
+            return P
         R = self.collection(liste_trajets,liste_camions)
-        P = self.partiesliste(R)
+        P = partiesliste(R)
         T = []
     # Nous allons calculer l'utilité totale pour toutes les parties de notre listes ( 2**len(L))
         for i in range(1,len(P)) :
             u = 0
             c = 0
             L=P[i]
+        
             # On regarde les combinaisons de trajets dont les camions vérifie la contrainte de budget
             for j in range(len(L)) : 
                 B = L[j]
@@ -295,6 +297,7 @@ class Graph:
                 T.append(L)
             # On trie les différentes combinaisons selon l'utilité totale en ordre décroissant
         T.sort(key = lambda x :x[2] , reverse=True)
+
         return T[0]
 
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
