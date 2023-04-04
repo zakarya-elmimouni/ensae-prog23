@@ -5,26 +5,20 @@ import unittest   # The test framework
 class Test_MST(unittest.TestCase):
     def test_network00(self):
 
-        g = graph_from_file("network.04.in")
+        g = graph_from_file("input/network.04.in")
 
-        g_excpected = {1: [(2, 4, 89), (4, 11, 6)],
-
-                        2: [(1, 4, 89), (3, 4, 3)],
+        g_excpected = { 1: [(4, 11, 6),(2, 4, 89)],
+             
+                        2: [(3, 4, 3), (1, 4, 89)],
 
                         3: [(2, 4, 3), (4, 4, 2)],
 
-                        4: [(1, 11, 6), (3, 4, 2)],
+                        4: [(3, 4, 2), (1, 11, 6)]}
 
-                        5: [],
+        self.assertEqual(g.graph,g_excpected)
 
-                        6: [],
+print(graph_from_file("input/network.04.in"))
+    
 
-                        7: [],
-
-                        8: [],
-
-                        9: [],
-
-                        10: []}
-
-        self.assertEqual(g_mst.graph, mst_expected)
+if __name__ == '__main__':
+    unittest.main()
