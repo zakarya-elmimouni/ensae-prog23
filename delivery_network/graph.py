@@ -296,9 +296,22 @@ class Graph:
                 L.append(c)
                 T.append(L)
             # On trie les différentes combinaisons selon l'utilité totale en ordre décroissant
-        T.sort(key = lambda x :x[2] , reverse=True)
+        for element in T:
+            print(element)
+        T.sort(key = lambda x :x[-2] , reverse=True)
+        Z=[]
+        L=[]
+        for element in T[0][:-2]:
+            D=[(element[4],element[5],element[6])] 
+            G=[(element[0],element[1],element[3])] 
+            Z.append(tuple(D+G))
+        L.append(frozenset(Z))
+        L.append(T[0][-1])
+        L.append(T[0][-2])
 
-        return T[0]
+        print(tuple(L))
+
+        return tuple(L)
 
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
     
