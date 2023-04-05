@@ -117,7 +117,8 @@ class Graph:
 
         Output
         --------
-        
+          path:list
+            un chemin possible pour faire passer le camion de la source à la destination
         """
 
         def get_precedent(graph,depart,arrivée,power):
@@ -415,6 +416,8 @@ class Graph:
                 if cout1<=cout2 and puissance1>=puissance2:
                     if camion2 in liste_camions:
                         liste_camions.remove(camion2)
+                if cout1>=cout2 and puissance1<=puissance2:
+                    liste_camions.remove(camion1)
         return nb_initial_camions,len(liste_camions),liste_camions
 
 #Question 10
@@ -539,6 +542,23 @@ def trucks_from_file(filename):
             else :
                 raise Exception("Format incorrect")
     return T
+def trucks_from_file_1(filename): 
+    with open(filename,"r") as file :
+        n= int(file.readline())
+        T=[]
+        L=[]
+        for i in range(n):
+            truck = list(map(int,file.readline().split()))
+            truck=tuple(truck)
+            if len(truck) == 2 :
+                T.append((i+1,truck[0],truck[1]))
+                L.append((i+1,truck[0],truck[1]))
+
+                if i>=1 and T[i][2] < T[i-1][2] :
+                    L.remove(T[i-1])
+            else :
+                raise Exception("Format incorrect")
+    return L
 
 
 
