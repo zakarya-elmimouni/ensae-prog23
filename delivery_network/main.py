@@ -74,3 +74,25 @@ g = graph_from_file("input/network.00.in")
 print(g.graph)
 g_mst =kruskal(g)
 print(g_mst)
+def iliminer_elements_inutiles(self,liste_camions):
+    #liste_camions a la meme forme [(camion,puissance,cout)]
+    #liste_trajets a aussi la meme forme:
+        nb_initial_camions=len(liste_camions)
+        print(nb_initial_camions)
+        liste_initiale=liste_camions.copy()
+        for i in range (nb_initial_camions):
+            print(i)
+            for j in range (i+1,nb_initial_camions):
+                print(j)
+                if j==nb_initial_camions:
+                    break
+                camion1=liste_initiale[i]
+                camion2=liste_initiale[j]
+                cout1=camion1[2]
+                cout2=camion2[2]
+                puissance1=camion1[1]
+                puissance2=camion2[1]
+                if cout1<=cout2 and puissance1>=puissance2:
+                    if camion2 in liste_camions:
+                        liste_camions.remove(camion2)
+        return nb_initial_camions,len(liste_camions),liste_camions

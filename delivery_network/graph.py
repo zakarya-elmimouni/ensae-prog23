@@ -102,7 +102,24 @@ class Graph:
     #Question 3 ( voir la suite de la question 3 aussi)
     
     def get_path_with_power(self,src, dest, power):
-# un petit developpement de la fonction get_precedent pour avoir le chemin
+        """Description
+        ------------------
+        cette fonction permet de retourner un chemin qu'un camion de puissance 'power' peut faire 
+
+        Parameters
+        -----------
+           src: Nodetype
+               c'est le départ de notre camion
+           dest: Nodetype
+               la destination
+           power: Numeric
+                la puissance du camion qui parcourt ce chemin
+
+        Output
+        --------
+        
+        """
+
         def get_precedent(graph,depart,arrivée,power):
             precedent={x:None for x in graph.keys()}
             visited_nodes={x:False for x in graph.keys()}
@@ -218,23 +235,26 @@ class Graph:
         arbre_couvrant=kruskal(self)
         arbre_couvrant=arbre_couvrant.graph
         power=[]
-        for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
-            for voisin in arbre_couvrant[sommet]:
-                power.append(voisin[1])
-                  #récuperation du maximum
-        if self.get_path_with_power(src,dest,float('inf'))!=None:
-            power.sort()
-            fin=len(power)-1
-            debut=0
-            milieu=(fin+debut)//2
-            while debut<fin:
-                if self.get_path_with_power(src,dest,power[milieu])!=None:
-                    fin=milieu
-                else:
-                    debut=milieu+1
-                milieu=(debut+fin)//2
-            return self.get_path_with_power(src,dest,power[milieu]),power[milieu]
-        raise Exception('pas de chemin')
+        if src==dest:
+            return [dest,src],0
+        else:
+            for sommet in arbre_couvrant.keys():#recherche de la puissance maximale des arretes
+                for voisin in arbre_couvrant[sommet]:
+                    power.append(voisin[1])
+                    #récuperation du maximum
+            if self.get_path_with_power(src,dest,float('inf'))!=None:
+                power.sort()
+                fin=len(power)-1
+                debut=0
+                milieu=(fin+debut)//2
+                while debut<fin:
+                    if self.get_path_with_power(src,dest,power[milieu])!=None:
+                        fin=milieu
+                    else:
+                        debut=milieu+1
+                    milieu=(debut+fin)//2
+                return self.get_path_with_power(src,dest,power[milieu]),power[milieu]
+
     #Question 1 séance4:
         #Manière 1 : Brute force
     # On définira une fonction qui retourne une liste avec tous les trajets et le meilleur camion associé
@@ -339,18 +359,20 @@ class Graph:
                         dict_profit_cout[trajet]=[max_profit_cout,camion]
         return dict_profit_cout
     def liste_trajet_camion_convenable(self,liste_trajets,liste_camions,Budget):
-        """"output
-    --------------
-    liste_finale: la liste des trajets avec les camion correspondants 
-    elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
-    cout_total: c'est le cout qu_on a dépensé <=B 
-    profit_total:le profit qu'on a obtenu"""
+
+        """"                          output
+                                   --------------
+         liste_finale: la liste des trajets avec les camion correspondants 
+         elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
+         cout_total: c'est le cout qu_on a dépensé <=B 
+         profit_total:le profit qu'on a obtenu                                         """
+        
+
         dict_profit_cout=self.maximiser_profit_cout(liste_camions,liste_trajets)
         liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
 
-    #liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_amx,camion])]
-    
-        liste_finale=[]#c'est juste un troncation de la liste_trajet_profit_cout_triée
+        # Liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_ma x,camion])]
+        liste_finale=[]#C'est juste un troncation de la liste_trajet_profit_cout_triée
         cout_totale=0
         profit_totale=0
         i=0 #indice d'itération
@@ -379,12 +401,9 @@ class Graph:
     #liste_camions a la meme forme [(camion,puissance,cout)]
     #liste_trajets a aussi la meme forme:
         nb_initial_camions=len(liste_camions)
-        print(nb_initial_camions)
         liste_initiale=liste_camions.copy()
         for i in range (nb_initial_camions):
-            print(i)
             for j in range (i+1,nb_initial_camions):
-                print(j)
                 if j==nb_initial_camions:
                     break
                 camion1=liste_initiale[i]
@@ -398,25 +417,6 @@ class Graph:
                         liste_camions.remove(camion2)
         return nb_initial_camions,len(liste_camions),liste_camions
 
-    #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
-#par exemple si un camion est de puissance petite alors que sont cout est grand
-#la meme chose pour un trajet 
-# si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
-def iliminer_elements_inutiles(liste_camions):
-    #liste_camions a la meme forme [(camion,puissance,cout)]
-    #liste_trajets a aussi la meme forme:
-    nb_initial_camions=len(liste_camions)
-    for i in range (len(liste_camions)):
-        for j in range (i,len(liste_camions)):
-            camion1=liste_camions[i]
-            camion2=liste_camions[j]
-            cout1=camion1[2]
-            cout2=camion2[2]
-            puissance1=camion1[1]
-            puissance2=camion2[1]
-            if cout1<=cout2 and puissance1>=puissance2:
-                liste_camions.remove()
-    return nb_initial_camions,len(liste_camions),liste_camions
 #Question 10
 
 def temps_moyen(file1,file2):
