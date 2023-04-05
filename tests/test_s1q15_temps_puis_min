@@ -4,15 +4,47 @@ sys.path.append("delivery_network")
 from time import perf_counter
 from graph import graph_from_file, way_from_file,kruskal,plus_petit_encetre_commun
 import unittest   # The test framework
+#calcul de temps avec la fonction plus petit anctre commun
+t1 = perf_counter()
+g = graph_from_file("input/network.1.in")
+arbre_couvrant=kruskal(g)
+liste_routes=way_from_file("input/routes.1.in")
+L=[]
+for route in liste_routes:
+    L.append(plus_petit_encetre_commun(arbre_couvrant,route[0],route[1],1)[1])
+t2 = perf_counter()
+print("temps_plus_petit_ancetre_commun",t2-t1)
+#calcul de temps avec la fonction puissance_min
+t1 = perf_counter()
+g = graph_from_file("input/network.1.in")
+arbre_couvrant=kruskal(g)
+liste_routes=way_from_file("input/routes.1.in")
+L=[]
+for route in liste_routes:
+    L.append(g.puissance_min(route[0],route[1])[1])
+t2 = perf_counter()
+print("temps_puissance_min",t2-t1)
+
+#
+#calcul de temps avec la fonction puissance_min
+t1 = perf_counter()
+g = graph_from_file("input/network.1.in")
+arbre_couvrant=kruskal(g)
+liste_routes=way_from_file("input/routes.1.in")
+L=[]
+for route in liste_routes:
+    L.append(g.min_power(route[0],route[1])[1])
+t2 = perf_counter()
+print("temps_power_min",t2-t1)
+
 t1 = perf_counter()
 g = graph_from_file("input/network.4.in")
 arbre_couvrant=kruskal(g)
 liste_routes=way_from_file("input/routes.4.in")
 L=[]
-for route in liste_routes:
-    L.append(plus_petit_encetre_commun(arbre_couvrant,route[0],route[1],1)[1])
-t2 = perf_counter()
-print(t2-t1)
-
+#for route in liste_routes:
+    #L.append(plus_petit_encetre_commun(arbre_couvrant,route[0],route[1],1)[1])
+#t2 = perf_counter()
+#print("temps2",t2-t1)
 
 

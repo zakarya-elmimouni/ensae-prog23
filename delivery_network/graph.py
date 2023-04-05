@@ -203,19 +203,24 @@ class Graph:
     # le programme de la question 6 est basée sur une recherche dichotomique
     #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
-        if self.get_path_with_power(src,dest,float('inf'))!=None:
-            self.power.sort()
-            fin=len(self.power)-1
-            debut=0
-            milieu=(fin+debut)//2
-            while debut<fin:
-                if self.get_path_with_power(src,dest,self.power[milieu])!=None:
-                    fin=milieu
-                else:
-                    debut=milieu+1
-                milieu=(debut+fin)//2
-            return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
-        raise Exception('pas de chemin')
+        if src==dest:
+            return [dest,src],0
+        else:
+
+            if self.get_path_with_power(src,dest,float('inf'))!=None:
+                self.power.sort()
+                fin=len(self.power)-1
+                debut=0
+                milieu=(fin+debut)//2
+                while debut<fin:
+                    if self.get_path_with_power(src,dest,self.power[milieu])!=None:
+                        fin=milieu
+                    else:
+                        debut=milieu+1
+                    milieu=(debut+fin)//2
+                return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
+            raise Exception('pas de chemin')
+
      #Question 7 
 
     def graphique(self) :
