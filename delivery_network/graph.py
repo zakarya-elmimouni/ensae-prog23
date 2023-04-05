@@ -119,6 +119,10 @@ class Graph:
         --------
           path:list
             un chemin possible pour faire passer le camion de la source à la destination
+
+        Complexity
+        -----------
+
         """
 
         def get_precedent(graph,depart,arrivée,power):
@@ -158,8 +162,20 @@ class Graph:
            
 #Question 5 : le chemin le plus court 
     def plus_court_chemin(self,src, dest, power):
+        """Description:
+        ---------------
+        cette fonction permet de retourner le plus court chemin (en terme de distance) que peut parcourir 
+        un camion de puissance "power" en se basant sur l'algorithme classique de Dijstra 
+
+        Parameters:
+        ------------
+        src:Nodetype
+          la source (le départ du camion)
+        dest:Nodetype
+          la destination (l'arrivée du camion)
+        power:Numeric
+        """
         distance, precedent=dijkstra(self.graph,src,power)
-    
         if distance[dest]== "inf":
             return None
         else:
@@ -403,7 +419,7 @@ class Graph:
 #par exemple si un camion est de puissance petite alors que sont cout est grand
 #la meme chose pour un trajet 
 # si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
-    def iliminer_elements_inutiles(self,liste_camions):
+    def eliminer_elements_inutils(self,liste_camions):
     #liste_camions a la meme forme [(camion,puissance,cout)]
     #liste_trajets a aussi la meme forme:
         nb_initial_camions=len(liste_camions)
