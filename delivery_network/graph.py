@@ -296,8 +296,6 @@ class Graph:
                 L.append(c)
                 T.append(L)
             # On trie les différentes combinaisons selon l'utilité totale en ordre décroissant
-        for element in T:
-            print(element)
         T.sort(key = lambda x :x[-2] , reverse=True)
         Z=[]
         L=[]
@@ -308,9 +306,6 @@ class Graph:
         L.append(frozenset(Z))
         L.append(T[0][-1])
         L.append(T[0][-2])
-
-        print(tuple(L))
-
         return tuple(L)
 
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
@@ -385,19 +380,22 @@ class Graph:
     #liste_trajets a aussi la meme forme:
         nb_initial_camions=len(liste_camions)
         print(nb_initial_camions)
-        liste_initiale=liste_camions
+        liste_initiale=liste_camions.copy()
         for i in range (nb_initial_camions):
-            for j in range (i,nb_initial_camions):
+            print(i)
+            for j in range (i+1,nb_initial_camions):
+                print(j)
+                if j==nb_initial_camions:
+                    break
                 camion1=liste_initiale[i]
                 camion2=liste_initiale[j]
-                print(camion1)
-                print(camion2)
                 cout1=camion1[2]
                 cout2=camion2[2]
                 puissance1=camion1[1]
                 puissance2=camion2[1]
                 if cout1<=cout2 and puissance1>=puissance2:
-                    liste_camions.remove(camion2)
+                    if camion2 in liste_camions:
+                        liste_camions.remove(camion2)
         return nb_initial_camions,len(liste_camions),liste_camions
 
     #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
