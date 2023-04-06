@@ -232,7 +232,10 @@ class Graph:
         # C'est une complexité de l'ordre O(V**2) , avec V le nombre de sommets.
 
            
+
+
     # Question 5 : Le plus court chemin 
+
 
     def plus_court_chemin(self,src, dest, power):
         """Description:
@@ -316,7 +319,10 @@ class Graph:
                 return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
             raise Exception('pas de chemin')
 
+
+
     # Question 7 
+
 
     def graphique(self) :
         """Description:
