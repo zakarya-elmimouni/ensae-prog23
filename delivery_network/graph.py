@@ -76,7 +76,7 @@ class Graph:
         return output
     
 
-    ###Séance1_Question 1:
+    # Question 1:
 
     def add_edge(self, node1, node2, power_min, dist=1):
         """
@@ -93,7 +93,8 @@ class Graph:
         dist: numeric (int or float), optional
             Distance between node1 and node2 on the edge. Default is 1.
         """
-        #On vérifie d'abord si les noeuds de notre nouevlle arrette existe déja dans notre graph, sinon on les ajoute
+        # On vérifie d'abord si les noeuds de notre nouevlle arrette existe déjà dans notre graphe
+        # Sinon on les ajoute
         if node1 not in self.graph:
             self.graph[node1] = []
             self.nb_nodes += 1
@@ -107,7 +108,51 @@ class Graph:
         self.graph[node2].append((node1, power_min, dist))
         self.nb_edges += 1
 
-    #Question 3 ( voir la suite de la question 3 aussi)
+    # Question 2
+
+    def connected_components(self):
+        """ Description:
+        ---------------
+        cette fonction permet de retourner les composantes connexes du graphe  
+
+        Parameters:
+        ------------ 
+        Output:
+        ---------
+        liste contenant tous les composantes connexes du graphe
+
+        Complexity:
+        Dans le pire des cas où tous les sommets sonts isolés on va avoir une complexité de l'ordre O(V**2)
+        et dans le cas d'un graphe connexe on aura une complexité de l'ordre O(V)
+        """
+        composantes_connexes=[]
+        visited_nodes={noeud:False for noeud in self.nodes}
+
+        def parcours_profondeur(s):
+            composantes=[s]
+            for neighboor in self.graph[s]:
+                neighboor=neighboor[0]
+                if not visited_nodes[neighboor]:
+                    visited_nodes[neighboor]=True
+                    composantes+=parcours_profondeur(neighboor)
+            return composantes
+        
+        for s in self.nodes:
+            if not visited_nodes[s]:
+                composantes_connexes.append(parcours_profondeur(s))
+        return composantes_connexes
+
+    def connected_components_set(self):
+        """
+        The result should be a set of frozensets (one per component), 
+        For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
+        """
+        return set(map(frozenset, self.connected_components()))
+
+
+
+    # Question 3 : Existence de trajet
+
     
     def get_path_with_power(self,src, dest, power):
         """Description
@@ -183,10 +228,12 @@ class Graph:
             path.reverse()
             return path
 
-        # la complexité de get_path_with_power est la même que la complexité de la fonction get_precedent
+        # La complexité de get_path_with_power est la même que la complexité de la fonction get_precedent
         # C'est une complexité de l'ordre O(V**2) , avec V le nombre de sommets.
+
            
-#Question 5 : le chemin le plus court 
+    # Question 5 : Le plus court chemin 
+
     def plus_court_chemin(self,src, dest, power):
         """Description:
         ---------------
@@ -222,51 +269,17 @@ class Graph:
             path.append(src)
             path.reverse()
             return path,distance[dest]
-#un point à améliorer dans ce programme c'est de faire un teste de composante connxe au début
-#si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
-#dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
+
+    # Nous pouvons  faire un test pour voir si le départ et l'arrivée sont dans la même composante connexe
+    # Dans ce cas on peut directement conclure sans passer par l'algorithme Djikstra 
     
-    def connected_components(self):
-        """ Description:
-        ---------------
-        cette fonction permet de retourner les composantes connexes du graphe  
+    
 
-        Parameters:
-        ------------ 
-        Output:
-        ---------
-        liste contenant tous les composantes connexes du graphe
 
-        Complexity:
-        Dans le pire des cas où tous les sommets sonts isolés on va avoir une complexité de l'ordre O(V**2)
-        et dans le cas d'un graphe connexe on aura une complexité de l'ordre O(V)
-        """
-        composantes_connexes=[]
-        visited_nodes={noeud:False for noeud in self.nodes}
+    #Question 6 : min_power
 
-        def parcours_profondeur(s):
-            composantes=[s]
-            for neighboor in self.graph[s]:
-                neighboor=neighboor[0]
-                if not visited_nodes[neighboor]:
-                    visited_nodes[neighboor]=True
-                    composantes+=parcours_profondeur(neighboor)
-            return composantes
-        
-        for s in self.nodes:
-            if not visited_nodes[s]:
-                composantes_connexes.append(parcours_profondeur(s))
-        return composantes_connexes
-    def connected_components_set(self):
-        """
-        The result should be a set of frozensets (one per component), 
-        For instance, for network01.in: {frozenset({1, 2, 3}), frozenset({4, 5, 6, 7})}
-        """
-        return set(map(frozenset, self.connected_components()))
-    #Question 6
+    # Le programme de la question 6 est basée sur une recherche dichotomique
 
-    # le programme de la question 6 est basée sur une recherche dichotomique
-    #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
         """Description:
         ---------------
@@ -303,7 +316,7 @@ class Graph:
                 return self.get_path_with_power(src,dest,self.power[milieu]), self.power[debut]
             raise Exception('pas de chemin')
 
-     #Question 7 
+    # Question 7 
 
     def graphique(self) :
         """Description:
@@ -327,9 +340,13 @@ class Graph:
                 dot.edge(str(node), str(edge[0]), label=str(edge[1]))
         # Affichage du graphe
         dot.render('graph')
-    #Question 14
+
     
-    def puissance_min(self,arbre_couvrant,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+    # Question 14 : puissance minimale à partir de l'arbre couvrant
+    
+    #recherche de la puissance minimale dans l'arbre couvrant
+    def puissance_min(self,arbre_couvrant,src,dest):
+
         """
         Description:
         ---------------
@@ -370,11 +387,14 @@ class Graph:
                     milieu=(debut+fin)//2
                 return self.get_path_with_power(src,dest,power[milieu]),power[milieu]
 
-    #Question 1 séance4:
-        #Manière 1 : Brute force
+    #Question 18 (Séance 4):
+
+    #Manière 1 : Brute force
+
     # On définira une fonction qui retourne une liste avec tous les trajets et le meilleur camion associé
     # Le meilleur camion qu'on peut associer à chaque trajet est évidement un camion qui peut passer
     # Et dont le coût est minimal
+
     def collection(self,liste_trajets,liste_camions):
         G = self.graph
         arbre=kruskal(self)
@@ -397,9 +417,12 @@ class Graph:
         return R
 
     # On cherche maintenant à trouver la combinaison de trajets qui soit optimale
+
     def liste_trajet_camion_convenable_0(self,liste_trajets,liste_camions,Budget):
-            # Nous allons définir une fonction intermédiaire qui retourne toutes les parties d'un ensemble
-    # En l'occurence ici ça sera une liste et on retournera une liste avec toutes les parties (P(E))
+
+        # Nous allons définir une fonction intermédiaire qui retourne toutes les parties d'un ensemble
+        # En l'occurence ici ça sera une liste et on retournera une liste avec toutes les parties (P(E))
+
         def partiesliste(L):
             P = []
             i, i_max = 0, 2**len(L)-1
@@ -416,7 +439,7 @@ class Graph:
         R = self.collection(liste_trajets,liste_camions)
         P = partiesliste(R)
         T = []
-    # Nous allons calculer l'utilité totale pour toutes les parties de notre listes ( 2**len(L))
+        # Nous allons calculer l'utilité totale pour toutes les parties de notre listes ( 2**len(L))
         for i in range(1,len(P)) :
             u = 0
             c = 0
@@ -444,6 +467,9 @@ class Graph:
         L.append(T[0][-2])
         return tuple(L)
 
+
+    # Méthode 2 : Sac à dos
+
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
     
         ''' Description:
@@ -468,9 +494,9 @@ class Graph:
         ------------
         La complexité de l'algorithme estde l'ordre de O(len(liste_camions)*len(liste_trajets))'''
         
-        dict_profit_cout={} #ce 
-        """"je vais definir une liste de puissance minimale de chaque trajet"""
-        #puissance_min_trajets={trajet:self.puissance_min(trajet[0],trajet[1])[1]for trajet in liste_trajets}
+        dict_profit_cout={} 
+        """"Nous allons definir une liste de puissance minimale pour chaque trajet"""
+
         puissance_min_trajets={}
         arbre=kruskal(self)
         for trajet in liste_trajets:
@@ -489,6 +515,7 @@ class Graph:
                         max_profit_cout=profit_trajet/cout_camion
                         dict_profit_cout[trajet]=[max_profit_cout,camion]
         return dict_profit_cout
+
     def liste_trajet_camion_convenable(self,liste_trajets,liste_camions,Budget):
         ''' Description:
         ----------------
@@ -517,7 +544,8 @@ class Graph:
         liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
 
         # Liste trié selon raport_maximale de chaque trajet sous la forme [(trajet,[rapport_ma x,camion])]
-        liste_finale=[]#C'est juste un troncation de la liste_trajet_profit_cout_triée
+        liste_finale=[]
+        #C'est juste un troncation de la liste_trajet_profit_cout_triée
         cout_totale=0
         profit_totale=0
         i=0 #indice d'itération
@@ -529,14 +557,21 @@ class Graph:
             rapport_max=liste_trajet_profit_cout_triée[i][1][0]
             profit_totale+=rapport_max*cout_camion
             i+=1
-        if cout_totale>Budget:#si on dépasse le budget
-            cout_totale=cout_totale-cout_camion   #on retire le cout du dernier camion ajouté
-            profit_totale=profit_totale-rapport_max*cout_camion  #on retire le profit du dernier trajet ajouté
+        if cout_totale>Budget:#Condition de Budget
+            cout_totale=cout_totale-cout_camion   
+            #on retire le cout du dernier camion ajouté
+            profit_totale=profit_totale-rapport_max*cout_camion 
+            #on retire le profit du dernier trajet ajouté
             liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
-        output_liste=[]#Une liste sous la forme [(camion,trajet)]
+        output_liste=[]
+        #Une liste sous la forme [(camion,trajet)]
         for element in liste_finale:
             output_liste.append((element[1][1],element[0]))
         return frozenset(output_liste),cout_totale,profit_totale
+
+
+    # Méthode 3 : élimination
+
     def eliminer_elements_inutils(self,liste_camions):
         ''' Description:
         ----------------
@@ -575,118 +610,9 @@ class Graph:
                     liste_camions.remove(camion1)
         return nb_initial_camions,len(liste_camions),liste_camions
 
-#Question 10
-
-def temps_moyen_1(filenetwork,fileroutes):
-    g=graph_from_file(filenetwork)
-    with open(fileroutes,"r") as file : 
-        n= int(file.readline())
-        W = []
-        tempstotale=0
-        nb_de_tarjet_calculé=0
-        for i in range(0,n,10000):
-            nb_de_tarjet_calculé+=1
-            way = list(map(int,file.readline().split()))
-            way=tuple(way)
-            if len(way)== 3 :
-                t1=perf_counter()
-                W.append(g.min_power(way[0],way[1]))
-                t2=perf_counter()
-                tempstotale+=t2-t1
-            else : 
-                raise Exception("Format incorrect")
-        
-    return tempstotale/nb_de_tarjet_calculé
-
-#qst14
-def temps_moyen_2(filenetwork,fileroutes):
-    g=graph_from_file(filenetwork)
-    arbrecouvrant=kruskal(g)
-    with open(fileroutes,"r") as file : 
-        n= int(file.readline())
-        W = []
-        tempstotale=0
-        nb_de_tarjet_calculé=0
-        for i in range(0,n,10000):
-            nb_de_tarjet_calculé+=1
-            way = list(map(int,file.readline().split()))
-            way=tuple(way)
-            if len(way)== 3 :
-                t1=perf_counter()
-                W.append(g.puissance_min(arbrecouvrant,way[0],way[1]))
-                t2=perf_counter()
-                tempstotale+=t2-t1
-            else : 
-                raise Exception("Format incorrect")
-        
-    return tempstotale/nb_de_tarjet_calculé
-
-#cette fonction permet de faire ce travail pour la fonction plus petit ancetre commun
-
-def temps_moyen_3(filenetwork,fileroutes):
-    g=graph_from_file(filenetwork)
-    arbre_couvrant=kruskal(g)
-    with open(fileroutes,"r") as file : 
-        n= int(file.readline())
-        W = []
-        nb_de_tarjet_calculé=0
-        tempstotale=0
-        for i in range(0,n,10000):
-            nb_de_tarjet_calculé+=1
-            way = list(map(int,file.readline().split()))
-            way=tuple(way)
-            if len(way)== 3 :
-                t1=perf_counter()
-                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
-                t2=perf_counter()
-                tempstotale+=t2-t1
-            else : 
-                raise Exception("Format incorrect")
-
-        
-    return tempstotale/nb_de_tarjet_calculé
-#question de seance3 qui demande le calcul du temps d'execution des fichiers routes.x
-def temps_totale(filenetwork,fileroutes):
-    g=graph_from_file(filenetwork)
-    arbre_couvrant=kruskal(g)
-    with open(fileroutes,"r") as file : 
-        n= int(file.readline())
-        W = []
-        tempstotale=0
-        for i in range(0,n):
-            way = list(map(int,file.readline().split()))
-            way=tuple(way)
-            if len(way)== 3 :
-                t1=perf_counter()
-                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
-                t2=perf_counter()
-                tempstotale+=t2-t1
-            else : 
-                raise Exception("Format incorrect")
-    return tempstotale
-#Question 11
-#     On utilise l'absurde, on suppose qu'il y a un chemin plus court qui n'est pas dans l'arbre couvrant,
-
-#  il suffira après de remplacer chaque arrete de ce nouveau chemin par une ou plusieurs arretes reliant les 2 mêmes points qui spnt dans l'arbre couvrant(c'est le principe même de l'arbre couvrant),
-
-#  mais puisqu'elle sont dans l'arbre couvrant donc la puissance est minimale, et donc on aura pu trouver un trajet d'une puissance encore plus petite
-
-# ==> Contradiction
-
-#Question 13
-
-#Question 15
-
-# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal 
-
-# qui calcule la puissance minimale d'un camion pour couvrir un trajet donné 
-
-# est donc de O(nb_edges.log (nb_nodes))("ce lui du tri rapide de kruskal") + O(nb_edges+nb_nodes), 
-
-# qui est équivalent à O(nb_edges.log(nb_nodes))
 
 
-#Question 1 (suite)
+# Question 1 (suite) et Question 4 : 
         
 def graph_from_file(filename):
     """
@@ -726,6 +652,10 @@ def graph_from_file(filename):
             else:
                 raise Exception("Format incorrect")
     return g
+
+
+# Définition des fonctions d'ouverture des fichiers : 
+
 def way_from_file(filename):
     ''' Description:
         ----------------
@@ -789,6 +719,7 @@ def trucks_from_file(filename):
             else :
                 raise Exception("Format incorrect")
     return T
+
 def trucks_from_file_1(filename): 
     ''' Description:
         ----------------
@@ -828,6 +759,7 @@ def trucks_from_file_1(filename):
     return L
 
 
+# Question 5 (Suite) : Le plus court chemin
 
 def dijkstra(graph,source,puissance_camion):
     ''' Description:
@@ -883,36 +815,115 @@ def dijkstra(graph,source,puissance_camion):
     return distance, precedent
 
 
-#Question 11
+# Question 10 : 
 
-#     On utilise l'absurde, on suppose qu'il y a un chemin plus court qui n'est pas dans l'arbre couvrant,
+def temps_moyen_1(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        nb_de_tarjet_calculé=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(g.min_power(way[0],way[1]))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+        
+    return tempstotale/nb_de_tarjet_calculé
+
+# Question 11 : 
+
+#   On utilise l'absurde, on suppose qu'il y a un chemin plus court qui n'est pas dans l'arbre couvrant,
+
 #  il suffira après de remplacer chaque arrete de ce nouveau chemin par une ou plusieurs arretes reliant les 2 mêmes points qui spnt dans l'arbre couvrant(c'est le principe même de l'arbre couvrant),
+
 #  mais puisqu'elle sont dans l'arbre couvrant donc la puissance est minimale, et donc on aura pu trouver un trajet d'une puissance encore plus petite
+
 # ==> Contradiction
 
+# Question 12 :
 
-#Question 15
+def kruskal(g):
+    """""   Fonction : kruskal
+    Description:
+    -----------
+    Permet d'envoyer un objet de la Class Graph qui est un arbre couvrant de poids minimal.
 
-# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal qui calcule la puissance minimale d'un camion pour couvrir un trajet donné est donc de O(U.log (V))("ce lui du tri rapide de kruskal") + O(U+V), qui est équivalent à O(U.log(V)), où U est le nombre d'arretes et V le nombre de sommets(ou noeuds)
+    Parameters:
+    ------
+    g : Graph
+        un élement de la classe graph
+    
+    output:
+    -------
+    arbre couvrant de la classe graph
 
-def nouveau_temps_moyen(file):
-    g = graph_from_file(file)
-    K= g.keys()
-    a=len(K)
-    i = 0
-    L=[]
-    S=0
-    while i < 31 :
-        n= randint(0, a-1)
-        m= randint(0,a-1)
-        if n!=m :
-            t1 = perf_counter()
-            a = Graph.puissance_min(g, K[n],K[m])
-            t2 = perf_counter()
-            L.append(t2-t1)
-            S = S + t2-t1
-            i = i+1
-    return S/i
+    Complexity : O(Nlog(N )).
+    """
+
+    N=g.nb_nodes
+    arcs=g.edges #Les arcs sont récupérés directement dans la lecture du fichier pour gagner du temps
+    arcs.sort(key=lambda x : x[2])
+    Arbre_minimum=Graph(g.nodes)
+    ed=UnionFind(N+1)
+    index=0
+    while Arbre_minimum.nb_edges!=N-1: # Cf Q.2
+        (src,dest,power,dist)=arcs[index]
+        index+=1
+
+        x=ed.find(src)
+        y=ed.find(dest)
+        
+        if x!=y:
+            Arbre_minimum.add_edge(src,dest,power,dist)
+
+            ed.Union(x,y)
+    return Arbre_minimum
+
+# Question 14 (Suite) : 
+
+def temps_moyen_2(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbrecouvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        nb_de_tarjet_calculé=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(g.puissance_min(arbrecouvrant,way[0],way[1]))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+        
+    return tempstotale/nb_de_tarjet_calculé
+
+# Question 15 :
+
+# Réponse : la complexité totale de la fonction basée sur l’arbre couvrant de poids minimal 
+
+# qui calcule la puissance minimale d'un camion pour couvrir un trajet donné 
+
+# est donc de O(nb_edges.log (nb_nodes))("ce lui du tri rapide de kruskal") + O(nb_edges+nb_nodes), 
+
+# qui est équivalent à O(nb_edges.log(nb_nodes))
+
+
+
+# Question 16 : 
 
 def profondeur_et_peres(root,arbre_couvrant):
     ''' Description:
@@ -960,6 +971,9 @@ def profondeur_et_peres(root,arbre_couvrant):
                 pile.append(voisin[0])
     return profondeur,peres
 
+
+# Question 16 (Suite) :
+
 def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     ''' Description:
         ----------------
@@ -996,14 +1010,14 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
         liste_ancetres_src.append(peres[element])
         element=peres[element][0]
     liste_ancetres_src.append(peres[element])
-    #liste_ancetres_src.append([root,0])
+    # Liste_ancetres_src.append([root,0])
     element=dest
     while element!=root:
         liste_ancetres_dest.append(peres[element])
         element=peres[element][0]
     
     liste_ancetres_dest.append(peres[element])
-    #détermination du plus petit encetre commun 
+    # Détermination du plus petit encetre commun 
     for i in range(len(liste_ancetres_src)):
         for j in range(len(liste_ancetres_dest)):
             ancetre_dest_couple=liste_ancetres_src[i]
@@ -1018,50 +1032,77 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     liste_dest=liste_ancetres_dest[:indice_dest-1]
     liste_dest.reverse()
     chemin=liste_src+liste_dest
-    #le chemin est donc liste_src+liste_dest
-    #determination du power min
+    # Le chemin est donc liste_src+liste_dest
+    # Determination du power min
     puissance_min=max(node[1]for node in chemin)
     return puissance_min,chemin
 
-#Question 1 Séance 4 :
-def kruskal(g):
-    """""   Fonction : kruskal
-    Description:
-    -----------
-    Permet d'envoyer un objet de la Class Graph qui est un arbre couvrant de poids minimal.
 
-    Parameters:
-    ------
-    g : Graph
-        un élement de la classe graph
-    
-    output:
-    -------
-    arbre couvrant de la classe graph
 
-    Complexity : O(Nlog(N )).
-    """
+# Question 17 : 
 
-    N=g.nb_nodes
-    arcs=g.edges #Les arcs sont récupérés directement dans la lecture du fichier pour gagner du temps
-    arcs.sort(key=lambda x : x[2])
-    Arbre_minimum=Graph(g.nodes)
-    ed=UnionFind(N+1)
-    index=0
-    while Arbre_minimum.nb_edges!=N-1: # Cf Q.2
-        (src,dest,power,dist)=arcs[index]
-        index+=1
+def temps_moyen_3(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbre_couvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        nb_de_tarjet_calculé=0
+        tempstotale=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
 
-        x=ed.find(src)
-        y=ed.find(dest)
         
-        if x!=y:
-            Arbre_minimum.add_edge(src,dest,power,dist)
+    return tempstotale/nb_de_tarjet_calculé
 
-            ed.Union(x,y)
-    return Arbre_minimum
+# Question de seance3 qui demande le calcul du temps d'execution des fichiers routes.x.in
 
+def temps_totale(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbre_couvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        for i in range(0,n):
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+    return tempstotale
 
+def nouveau_temps_moyen(file):
+    g = graph_from_file(file)
+    K= g.keys()
+    a=len(K)
+    i = 0
+    L=[]
+    S=0
+    while i < 31 :
+        n= randint(0, a-1)
+        m= randint(0,a-1)
+        if n!=m :
+            t1 = perf_counter()
+            a = Graph.puissance_min(g, K[n],K[m])
+            t2 = perf_counter()
+            L.append(t2-t1)
+            S = S + t2-t1
+            i = i+1
+    return S/i
 
 
 

@@ -96,3 +96,7 @@ def iliminer_elements_inutiles(self,liste_camions):
                     if camion2 in liste_camions:
                         liste_camions.remove(camion2)
         return nb_initial_camions,len(liste_camions),liste_camions
+
+
+
+        #puissance_min_trajets={trajet:self.puissance_min(trajet[0],trajet[1])[1]for trajet in liste_trajets}
