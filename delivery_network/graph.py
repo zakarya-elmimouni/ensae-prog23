@@ -24,6 +24,36 @@ class EnsembleDisjoint:
         x = self.get_parent(a)
         y = self.get_parent(b)
         self.parent[x] = y
+class UnionFind:
+    """""   Class UnionFind
+    Attributs : 
+    -----------
+    parent : liste
+    rank : liste 
+    Methodes : 
+    ----------
+    get_parent(): obtenir le parent d'un noeud qui est un représentant d'un groupe de noeuds
+    Union(): permet de réunir deux groupes de noeuds
+    """
+
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+        
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+        
+    def Union(self, x, y):
+        root_x, root_y = self.find(x), self.find(y)
+        if root_x != root_y:
+            if self.rank[root_x] > self.rank[root_y]:
+                self.parent[root_y] = root_x
+            else:
+                self.parent[root_x] = root_y
+                if self.rank[root_x] == self.rank[root_y]:
+                    self.rank[root_y] += 1
 class Graph:
     """
     A class representing graphs as adjacency lists and implementing various algorithms on the graphs. Graphs in the class are not oriented. 
@@ -174,6 +204,15 @@ class Graph:
         dest:Nodetype
           la destination (l'arrivée du camion)
         power:Numeric
+         puissance du camion parcourant ce trajet
+
+        Output:
+        ---------
+        liste représentant le chemin le plus court et la distance correspnodante à ce chemin
+
+        Complexity:
+        -----------
+        la meme complicité que l'algorithme de Dijstra
         """
         distance, precedent=dijkstra(self.graph,src,power)
         if distance[dest]== "inf":
@@ -192,21 +231,35 @@ class Graph:
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
     def connected_components(self):
+        """ Description:
+        ---------------
+        cette fonction permet de retourner les composantes connexes du graphe  
+
+        Parameters:
+        ------------ 
+        Output:
+        ---------
+        liste contenant tous les composantes connexes du graphe
+
+        Complexity:
+        dans le pire des cas ou tous les sommets sonts isolés on va avoir une complexité de l'ordre O(V**2)
+        et dans le cas d'un graphe connexe on aura une complexité de l'ordre O(V)
+        """
         composantes_connexes=[]
         visited_nodes={noeud:False for noeud in self.nodes}
 
-        def deep_parcours(s):
+        def parcours_profondeur(s):
             composantes=[s]
             for neighboor in self.graph[s]:
                 neighboor=neighboor[0]
                 if not visited_nodes[neighboor]:
                     visited_nodes[neighboor]=True
-                    composantes+=deep_parcours(neighboor)
+                    composantes+=parcours_profondeur(neighboor)
             return composantes
         
         for s in self.nodes:
             if not visited_nodes[s]:
-                composantes_connexes.append(deep_parcours(s))
+                composantes_connexes.append(parcours_profondeur(s))
         return composantes_connexes
     def connected_components_set(self):
         """
@@ -219,10 +272,27 @@ class Graph:
     # le programme de la question 6 est basée sur une recherche dichotomique
     #début 0 et fin égale au max des puissances des arretes
     def min_power(self, src, dest):
+        """Description:
+        ---------------
+        cette fonction permet de calculer la puissance minimale d'un trajet par une méthode 
+        dichotomique
+
+        Parameters:
+        ------------
+        src:Nodetype
+          la source (le départ du camion)
+        dest:Nodetype
+          la destination (l'arrivée du camion)
+
+        Output:
+        ---------
+        liste représentant le chemin le plus court et la distance correspondante à ce chemin
+        
+        Complexity:
+        """
         if src==dest:
             return [dest,src],0
         else:
-
             if self.get_path_with_power(src,dest,float('inf'))!=None:
                 self.power.sort()
                 fin=len(self.power)-1
@@ -240,6 +310,18 @@ class Graph:
      #Question 7 
 
     def graphique(self) :
+        """Description:
+        ---------------
+        cette fonction permet de tracer le graphe en entrée 
+
+        Parameters:
+        ------------
+      self: Graphe
+
+        Output:
+        ---------
+        Un dessin représentant notre graphe 
+        """
          # Création du graphe avec Graphviz
         dot = Digraph()
         for node in self.graph:
@@ -252,6 +334,21 @@ class Graph:
     #Question 14
     
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+        """Description:
+        ---------------
+        cette fonction permet de retourner la puissance minimale d'un graphe en se basant sur son arbre couvrant
+        
+        Parameters:
+        ------------
+        src:Nodetype
+          la source (le départ du camion)
+        dest:Nodetype
+          la destination (l'arrivée du camion)
+
+        Output:
+        ---------
+        liste représentant un chemin possible  et la puissance minimale d'u
+        """
         fin=0
         debut=0
         arbre_couvrant=kruskal(self)
@@ -661,30 +758,6 @@ def nouveau_temps_moyen(file):
             i = i+1
     return S/i
 
-def kruskal(g):
-    """
-    Construction de l'arbre couvrant minimum à l'aide de l'algorithme de Kruskal
-    Les paramètres sont :
-        - Les arcs du graphe au format (début, fin, longueur)
-        - Le nombre de sommets dans le graph
-    """
-    edges=g.edges
-    edges.sort(key=lambda x: x[2])
-    Arbre_couvrant =Graph([])
-    ed = EnsembleDisjoint(g)
-    index = 0
-    while Arbre_couvrant.nb_edges!= g.nb_nodes - 1:
-
-        (src, dest, weight,dist) = edges[index]
-        index = index + 1
-
-        x = ed.get_parent(src)
-        y = ed.get_parent(dest)
-
-        if x != y:
-            Arbre_couvrant.add_edge(src, dest, weight,dist)
-            ed.Union(x, y)
-    return Arbre_couvrant
 def profondeur (root,arbre_couvrant):
     """ça retourne un dictionnaire {'sommet':profondeur}"""
     visited_nodes={node:False for node in arbre_couvrant.nodes}
@@ -740,7 +813,41 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     return puissance_min,chemin
 
 #Question 1 Séance 4 :
+def kruskal(g):
+    """""   Fonction : kruskal
+    Description:
+    -----------
+    Permet d'envoyer un objet de la Class Graph qui est un arbre couvrant de poids minimal.
 
+    Parameters:
+    ------
+    g : un élement de la classe graph
+    
+    output:
+    -------
+    arbre couvrant de la classe graph
+
+    Complexity : O(Nlog(N )).
+    """
+
+    N=g.nb_nodes
+    arcs=g.edges #Les arcs sont récupérés directement dans la lecture du fichier pour gagner du temps
+    arcs.sort(key=lambda x : x[2])
+    Arbre_minimum=Graph(g.nodes)
+    ed=UnionFind(N+1)
+    index=0
+    while Arbre_minimum.nb_edges!=N-1: # Cf Q.2
+        (src,dest,power,dist)=arcs[index]
+        index+=1
+
+        x=ed.find(src)
+        y=ed.find(dest)
+        
+        if x!=y:
+            Arbre_minimum.add_edge(src,dest,power,dist)
+
+            ed.Union(x,y)
+    return Arbre_minimum
 
 
 
