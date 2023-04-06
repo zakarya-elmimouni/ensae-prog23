@@ -848,6 +848,8 @@ def temps_moyen_1(filenetwork,fileroutes):
 
 # ==> Contradiction
 
+
+
 # Question 12 :
 
 def kruskal(g):
