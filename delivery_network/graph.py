@@ -173,7 +173,6 @@ class Graph:
           path:list
             un chemin possible pour faire passer le camion de la source à la destination
 
-        Complexity
         -----------
 
         """
@@ -256,9 +255,9 @@ class Graph:
         ---------
         liste représentant le chemin le plus court et la distance correspnodante à ce chemin
 
-        Complexity:
+
         -----------
-        la meme complicité que l'algorithme de Dijstra
+        La même complicité que l'algorithme de Dikjstra
         """
         distance, precedent=dijkstra(self.graph,src,power)
         if distance[dest]== "inf":
@@ -300,7 +299,7 @@ class Graph:
         ---------
         liste représentant le chemin le plus court et la distance correspondante à ce chemin
         
-        Complexity:
+        
         """
         if src==dest:
             return [dest,src],0
