@@ -98,7 +98,7 @@ class Graph:
         return output
     
 
-    #Question 1
+    ###Séance1_Question 1:
 
     def add_edge(self, node1, node2, power_min, dist=1):
         """
@@ -826,15 +826,27 @@ def dijkstra(graph,source,puissance_camion):
         graph: dict
             Un dictionnaore qui contient la liste d'adjacence de chaque sommet sous la forme
             graph[node] = [(neighbor1, p1, d1), (neighbor1, p1, d1), ...]
+            p1 la puissance pour passer du sommet à son voisin1 et d1 est la distance entre le sommet 
+            et son voisin1
+        source:Nodetype
+            C'est le sommet de départ
+        puissance_camion:Numeric
+            C'est la puissance du camion 
 
         Output:
         --------
-        W:list
-            liste des camions contenus dans le fichier        
+        distance:dict
+            Dictionnaire dont les clés sont les sommets le les valeurs sont la distance minimale 
+            de la source. il est sous la forme
+            distance[sommet]=distance minimale séparant ce sommet de la source 
+        precedent:dict
+            Dictionnaire dont les clés sont les sommets et les valeurs sont le sommet précedent qui 
+            permet d'avoir une distance minimale. il est sous la forme 
+            precedent[sommet]=noeud qui précéde ce sommet dans le plus court chemin       
         
         Complexity:
         ------------
-        La complexité de l'algorithme est de l'ordre de O(n) telle que n le nombre de ligne du fichier
+        La complexité de l'algorithme est de l'ordre de O(Vlog(V)) telle que V est le nombre de sommets
     '''
     precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
     dejaTraite = {x:False for x in graph.keys()}#l'élément est déja traité? False ou True
@@ -855,27 +867,6 @@ def dijkstra(graph,source,puissance_camion):
                         a_traiter.append((dist_voisin, voisin[0]))
         a_traiter.sort(reverse=True)
     return distance, precedent
-
-
-# Question 3 (suite)
-def get_precedent(graph,depart,arrivée,power):
-    precedent={x:None for x in graph.keys()}
-    visited_nodes={x:False for x in graph.keys()}
-    pile=[depart]
-    visited_nodes[depart]=True
-    while pile:
-        sommet=pile.pop()
-        liste_nouveau_sommets_voisins=[voisin for voisin in graph[sommet]if not visited_nodes[voisin[0]]]
-        for voisin in liste_nouveau_sommets_voisins:
-            if voisin[1]<=power:
-                precedent[voisin[0]]=sommet
-                visited_nodes[voisin[0]]=True
-                if voisin[0] ==arrivée:
-                    return precedent
-                else:
-                    pile.append(voisin[0])
-    return precedent
-
 
 
 #Question 11
@@ -909,8 +900,34 @@ def nouveau_temps_moyen(file):
             i = i+1
     return S/i
 
-def profondeur (root,arbre_couvrant):
-    """ça retourne un dictionnaire {'sommet':profondeur}"""
+def profondeur_et_peres(root,arbre_couvrant):
+    ''' Description:
+        ----------------
+        Cette fonction permet la recherche de la profondeur et du pere de chaque élément de l'arbre 
+        couvrant en partant d'une racine 'root'
+        
+        Parameters:
+        ------------
+        root: Nodetype
+            Une racine du graphe
+        arbre_couvrant:Graph
+            Un arbre couvrant résulatant de l'algorithme de kruskal 
+
+        Output:
+        --------
+        profondeur:dict
+            Dictionnaire dont les clés sont les sommets le les valeurs sont la profondeur de chaque
+             sommet. Il est sous la forme:
+            profondeur[sommet]=profondeur de ce sommet en partant du racine
+        peres:dict
+            Dictionnaire dont les clés sont les sommets et les valeurs sont les peres correspondants 
+            dans l'arbre couvrant. Il est sous la forme: 
+            peres[sommet]=noeud père du sommet dans l'arbre couvrant       
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(V) telle que V est le nombre de sommets
+    '''
     visited_nodes={node:False for node in arbre_couvrant.nodes}
     profondeur={node:None for node in arbre_couvrant.nodes}
     peres={node:None for node in arbre_couvrant.nodes}
@@ -929,7 +946,35 @@ def profondeur (root,arbre_couvrant):
     return profondeur,peres
 
 def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
-    peres=profondeur(root,arbre_couvrant)[1]
+    ''' Description:
+        ----------------
+        Cette fonction permet le calcul de la puissance minimale  et du chemin associé en se basant 
+        sur la méthode du plus petit ancêtre commun 
+        
+        Parameters:
+        ------------
+        root: Nodetype
+            Une racine du graphe
+        arbre_couvrant:Graph
+            Un arbre couvrant résulatant de l'algorithme de kruskal 
+        src:Nodetype
+            Sommet de départ
+        dest:Nodetype
+            Sommet d'arrivée
+
+        Output:
+        --------
+        puissance_min:Numeric
+            La puissane minimal d'un camion pouvant parcourir le trajet    
+        chemin:list
+            un chemin possible correspondant à cette puissance minimale
+
+        Complexity:
+        ------------
+        
+    '''
+
+    peres=profondeur_et_peres(root,arbre_couvrant)[1]
     liste_ancetres_src=[[src,0]]
     liste_ancetres_dest=[[dest,0]]
     element=src
@@ -972,7 +1017,8 @@ def kruskal(g):
 
     Parameters:
     ------
-    g : un élement de la classe graph
+    g : Graph
+        un élement de la classe graph
     
     output:
     -------
