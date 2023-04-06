@@ -1015,6 +1015,7 @@ def profondeur_et_peres(root,arbre_couvrant):
     peres={node:None for node in arbre_couvrant.nodes}
     pile=[]
     peres[root]=[root,0]
+    visited_nodes[root]=True
     pile.append(root)
     profondeur[root]=0
     while pile:
@@ -1055,7 +1056,6 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
         ------------
         
     '''
-
     peres=profondeur_et_peres(root,arbre_couvrant)[1]
     liste_ancetres_src=[[src,0]]
     liste_ancetres_dest=[[dest,0]]
@@ -1063,25 +1063,26 @@ def plus_petit_encetre_commun(arbre_couvrant,src,dest,root):
     while element!=root: # O(V)
         liste_ancetres_src.append(peres[element])
         element=peres[element][0]
-    liste_ancetres_src.append([root,0])
+    liste_ancetres_src.append(peres[element])
+    #liste_ancetres_src.append([root,0])
     element=dest
     while element!=root:
         liste_ancetres_dest.append(peres[element])
         element=peres[element][0]
-    liste_ancetres_dest.append([root,0])
+    
+    liste_ancetres_dest.append(peres[element])
     #détermination du plus petit encetre commun 
-    for i in range(len(liste_ancetres_dest)):
-        for j in range(len(liste_ancetres_src)):
-            ancetre_dest_couple=liste_ancetres_dest[i]
-            ancetre_src_couple=liste_ancetres_src[j]
+    for i in range(len(liste_ancetres_src)):
+        for j in range(len(liste_ancetres_dest)):
+            ancetre_dest_couple=liste_ancetres_src[i]
+            ancetre_src_couple=liste_ancetres_dest[j]
             ancetre_dest=ancetre_dest_couple[0]
             ancetre_src=ancetre_src_couple[0]
             if ancetre_src==ancetre_dest:#ancetre commun
-                indice_dest=i
-                indice_src=j
+                indice_dest=j
+                indice_src=i
                 break
-    liste_src=liste_ancetres_src[:indice_src]
-    #print(type(liste_src))
+    liste_src=liste_ancetres_src[:indice_src+1]
     liste_dest=liste_ancetres_dest[:indice_dest-1]
     liste_dest.reverse()
     chemin=liste_src+liste_dest
