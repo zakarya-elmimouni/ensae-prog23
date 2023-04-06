@@ -1,7 +1,7 @@
 # This will work if ran from the root folder.
 import sys 
 sys.path.append("delivery_network")
-from graph import Graph,graph_from_file,EnsembleDisjoint,kruskal
+from graph import Graph,graph_from_file,kruskal
 import unittest   # The test framework
 
 class Test_MST(unittest.TestCase):

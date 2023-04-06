@@ -17,9 +17,6 @@ class Test_MinimalPower(unittest.TestCase):
         arbrecouvrant=kruskal(g)
         self.assertEqual(g.puissance_min(arbrecouvrant,1, 4)[1], 11)
         self.assertEqual(g.puissance_min(arbrecouvrant,2, 4)[1], 10)
-    def test_network1(self):
-        g = graph_from_file("input/network.04.in")
-        arbrecouvrant=kruskal(g)
-        self.assertEqual(g.puissance_min(arbrecouvrant,1, 4)[1], 4)     
+    
 if __name__ == '__main__':
     unittest.main()

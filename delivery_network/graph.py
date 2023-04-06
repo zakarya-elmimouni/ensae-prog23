@@ -1,29 +1,7 @@
 from time import perf_counter
 from random import randint
 from graphviz import Digraph
-class EnsembleDisjoint:
-    """
-    Cette classe permet de gérer les ensmebles disjoints. Deux éléments sont
-    considérés dans le même ensemble s'ils ont le même parent.
-    """
-    parent = {}
 
-    # Création de n ensemble disjoints, état de départt de notre graphe
-    def __init__(self,g):
-        for element  in g.nodes:
-            self.parent[element] = element
-
-    # Fonction qui permet de retrouver le parent le plus lointain
-    def get_parent(self, k):
-        if self.parent[k] != k:
-            self.parent[k]=self.get_parent(self.parent[k])
-        return self.parent[k]
-
-    # Union de deux ensembles jusque là disjoints
-    def Union(self, a, b):
-        x = self.get_parent(a)
-        y = self.get_parent(b)
-        self.parent[x] = y
 class UnionFind:
     """""   Class UnionFind
     Attributs : 
@@ -399,10 +377,11 @@ class Graph:
     # Et dont le coût est minimal
     def collection(self,liste_trajets,liste_camions):
         G = self.graph
+        arbre=kruskal(self)
         W = liste_trajets
         T = liste_camions
         for i in range(len(W)) :
-            L,a = self.puissance_min(W[i][0], W[i][1])
+            L,a = self.puissance_min(arbre,W[i][0], W[i][1])
             W[i]= [W[i][0],W[i][1],a,W[i][2]]
         # On trie les camions selon la 2 ème variable (le coût)
         T.sort(key = lambda x :x[2] )
@@ -493,10 +472,11 @@ class Graph:
         """"je vais definir une liste de puissance minimale de chaque trajet"""
         #puissance_min_trajets={trajet:self.puissance_min(trajet[0],trajet[1])[1]for trajet in liste_trajets}
         puissance_min_trajets={}
+        arbre=kruskal(self)
         for trajet in liste_trajets:
             depart=trajet[0]
             arrivée=trajet[1]
-            liste,puissance_min=self.puissance_min(depart,arrivée)
+            liste,puissance_min=self.puissance_min(arbre,depart,arrivée)
             puissance_min_trajets[trajet]=puissance_min
         for trajet in liste_trajets:
             profit_trajet=trajet[2]
@@ -597,41 +577,6 @@ class Graph:
 
 #Question 10
 
-def temps_moyen(file1,file2):
-    ''' Description:
-        ----------------
-       yassine 
-        
-        Parameters:
-        ------------
-        file1:text
-            fichier qui représente le graphe 
-        file2:
-            fichier qui représente les routes au sein de ce graphe 
-
-        Output:
-        --------
-        temps moyen de calcul de la fonction puissance_min        
-        
-        Complexity:
-        ------------
-        La complexité de l'algorithme est de l'ordre de O())
-        '''
-    g = graph_from_file(file1)
-    L = way_from_file(file2)
-    n=len(L)
-    Times = []
-    M = n//1000
-    i = 0
-    S=0
-    while i < M :
-        t1 = perf_counter()
-        a = g.puissance_min(L[i][0], L[i][1])
-        t2 = perf_counter()
-        Times.append(t2-t1)
-        S = S + (t2-t1)
-        i = i+1
-    return S/i
 def temps_moyen_1(filenetwork,fileroutes):
     g=graph_from_file(filenetwork)
     with open(fileroutes,"r") as file : 
@@ -651,8 +596,9 @@ def temps_moyen_1(filenetwork,fileroutes):
             else : 
                 raise Exception("Format incorrect")
         
-    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
+    return tempstotale/nb_de_tarjet_calculé
 
+#qst14
 def temps_moyen_2(filenetwork,fileroutes):
     g=graph_from_file(filenetwork)
     arbrecouvrant=kruskal(g)
@@ -673,8 +619,10 @@ def temps_moyen_2(filenetwork,fileroutes):
             else : 
                 raise Exception("Format incorrect")
         
-    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
+    return tempstotale/nb_de_tarjet_calculé
+
 #cette fonction permet de faire ce travail pour la fonction plus petit ancetre commun
+
 def temps_moyen_3(filenetwork,fileroutes):
     g=graph_from_file(filenetwork)
     arbre_couvrant=kruskal(g)
@@ -696,7 +644,7 @@ def temps_moyen_3(filenetwork,fileroutes):
                 raise Exception("Format incorrect")
 
         
-    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
+    return tempstotale/nb_de_tarjet_calculé
 #question de seance3 qui demande le calcul du temps d'execution des fichiers routes.x
 def temps_totale(filenetwork,fileroutes):
     g=graph_from_file(filenetwork)
@@ -737,23 +685,7 @@ def temps_totale(filenetwork,fileroutes):
 
 # qui est équivalent à O(nb_edges.log(nb_nodes))
 
-def nouveau_temps_moyen(file1,file2):
-    g = graph_from_file(file1)
-    g_mst= kruskal(g)
-    L= way_from_file(file2)
-    n= len(L)
-    Times = []
-    M = n//10
-    i = 0
-    S=0
-    while i < M :
-        t1 = perf_counter()
-        a = Graph.puissance_min(g_mst.graph, L[i][0], L[i][1])
-        t2 = perf_counter()
-        Times.append(t2-t1)
-        S = S + (t2-t1)
-        i = i+1
-    return S/i 
+
 #Question 1 (suite)
         
 def graph_from_file(filename):
