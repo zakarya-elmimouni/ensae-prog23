@@ -351,7 +351,7 @@ class Graph:
         dot.render('graph')
     #Question 14
     
-    def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
+    def puissance_min(self,arbre_couvrant,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
         """
         Description:
         ---------------
@@ -370,7 +370,6 @@ class Graph:
         """
         fin=0
         debut=0
-        arbre_couvrant=kruskal(self)
         arbre_couvrant=arbre_couvrant.graph
         power=[]
         if src==dest:
@@ -511,7 +510,7 @@ class Graph:
                         dict_profit_cout[trajet]=[max_profit_cout,camion]
         return dict_profit_cout
     def liste_trajet_camion_convenable(self,liste_trajets,liste_camions,Budget):
-       ''' Description:
+        ''' Description:
         ----------------
         Cette fonction permet de chercher la meilleur combinaison des trajets et camions qui permet 
         la maximisation du profit , en se basant sur l'algorithme du sac à dos
@@ -622,7 +621,7 @@ def temps_moyen(file1,file2):
     L = way_from_file(file2)
     n=len(L)
     Times = []
-    M = n//10
+    M = n//1000
     i = 0
     S=0
     while i < M :
@@ -633,7 +632,90 @@ def temps_moyen(file1,file2):
         S = S + (t2-t1)
         i = i+1
     return S/i
+def temps_moyen_1(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        nb_de_tarjet_calculé=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(g.min_power(way[0],way[1]))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+        
+    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
 
+def temps_moyen_2(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbrecouvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        nb_de_tarjet_calculé=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(g.puissance_min(arbrecouvrant,way[0],way[1]))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+        
+    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
+#cette fonction permet de faire ce travail pour la fonction plus petit ancetre commun
+def temps_moyen_3(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbre_couvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        nb_de_tarjet_calculé=0
+        tempstotale=0
+        for i in range(0,n,10000):
+            nb_de_tarjet_calculé+=1
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+
+        
+    return tempstotale/nb_de_tarjet_calculé, nb_de_tarjet_calculé
+#question de seance3 qui demande le calcul du temps d'execution des fichiers routes.x
+def temps_totale(filenetwork,fileroutes):
+    g=graph_from_file(filenetwork)
+    arbre_couvrant=kruskal(g)
+    with open(fileroutes,"r") as file : 
+        n= int(file.readline())
+        W = []
+        tempstotale=0
+        for i in range(0,n):
+            way = list(map(int,file.readline().split()))
+            way=tuple(way)
+            if len(way)== 3 :
+                t1=perf_counter()
+                W.append(plus_petit_encetre_commun(arbre_couvrant,way[0],way[1],1))
+                t2=perf_counter()
+                tempstotale+=t2-t1
+            else : 
+                raise Exception("Format incorrect")
+    return tempstotale
 #Question 11
 #     On utilise l'absurde, on suppose qu'il y a un chemin plus court qui n'est pas dans l'arbre couvrant,
 
