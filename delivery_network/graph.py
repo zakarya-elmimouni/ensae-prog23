@@ -156,6 +156,24 @@ class Graph:
         """
 
         def get_precedent(graph,depart,arrivée,power):
+            """Description:
+            ---------------
+            Cette focntion permet de faire un parcours en largeur en commençant par le sommet de départ.
+            Le parcours s'arrête une fois on atteint le sommet d'arrivée
+            
+            Parameters:
+            -----------
+            graph:dict
+                un dictionnaire représentant le graphe
+            depart:Nodetype
+                sommet de départ
+            arrivée: Nodetype
+                sommet d'arrivée
+            
+            Output:
+            -------
+            dictionnaire qui comporte les sommets comme es clés et l'élément précédent de chaque sommet comme valeur 
+            """
             precedent={x:None for x in graph.keys()}
             visited_nodes={x:False for x in graph.keys()}
             pile=[depart]
@@ -226,7 +244,7 @@ class Graph:
             path.append(src)
             path.reverse()
             return path,distance[dest]
-#un pont à améliorer dans ce programme c'est de faire un teste de composante connxe au début
+#un point à améliorer dans ce programme c'est de faire un teste de composante connxe au début
 #si le depart et l'arrivée ne sont pas dans la meme composante connexes on va pas se casser la tete
 #dans ce cas ça vaut pas le cout de passer par l'algorithme de dijkstra qui de complexité assez grande 
     
@@ -242,7 +260,7 @@ class Graph:
         liste contenant tous les composantes connexes du graphe
 
         Complexity:
-        dans le pire des cas ou tous les sommets sonts isolés on va avoir une complexité de l'ordre O(V**2)
+        Dans le pire des cas où tous les sommets sonts isolés on va avoir une complexité de l'ordre O(V**2)
         et dans le cas d'un graphe connexe on aura une complexité de l'ordre O(V)
         """
         composantes_connexes=[]
@@ -334,7 +352,8 @@ class Graph:
     #Question 14
     
     def puissance_min(self,src,dest):#recherche de la puissance minimale dans l'arbre couvrant
-        """Description:
+        """
+        Description:
         ---------------
         cette fonction permet de retourner la puissance minimale d'un graphe en se basant sur son arbre couvrant
         
@@ -347,7 +366,7 @@ class Graph:
 
         Output:
         ---------
-        liste représentant un chemin possible  et la puissance minimale d'u
+        liste représentant un chemin possible  et la puissance minimale d'un camion qui peut parcourir ce chemin
         """
         fin=0
         debut=0
@@ -449,15 +468,29 @@ class Graph:
 
     def maximiser_profit_cout(self,liste_camions,liste_trajets):
     
-        '''---input---
-    liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
-    liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
-    ---outpout---
-    dictionnaire qui comporte chaque aretes associé au rapport profit/cout maximal
-    ainsi que le caion associé à ce rapport'''
-        dict_profit_cout={}#ce dictionnaire va contenir chaque trajet avec un rapport profit-cout maximal et le camion qui verifie ce rapport 
-    #liste_trajets va etre un liste de tous les trajets possibles [(debut,fin,profit)]
-    #liste_camions va etre une liste ayyant la forme [(camion,puissance,cout)]
+        ''' Description:
+        ----------------
+        Cette fonction permet de calculer pour chaque trajet le rapport profit/cout maximal et le camion
+        correspondant à ce rapport et il retourne le résultat sous forme d'un dictionnaire sous la forme 
+        {"trajet":[rapport (profit/cout)maximale,Camion_correspondant à ce rapport]...}
+        
+        Parameters:
+        ------------
+        liste_camions: list
+        liste de tous les Camions ayant la forme [(camion,puissance,cout)...]
+        liste_trajets: list
+        une liste de tous les trajets possibles [(debut,fin,profit)....]
+
+        Output:
+        --------
+        Dictionnaire qui comporte chaque arêtes associé au rapport profit/cout maximal
+        ainsi que le camion associé à ce rapport
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme estde l'ordre de O(len(liste_camions)*len(liste_trajets))'''
+        
+        dict_profit_cout={} #ce 
         """"je vais definir une liste de puissance minimale de chaque trajet"""
         #puissance_min_trajets={trajet:self.puissance_min(trajet[0],trajet[1])[1]for trajet in liste_trajets}
         puissance_min_trajets={}
@@ -478,15 +511,29 @@ class Graph:
                         dict_profit_cout[trajet]=[max_profit_cout,camion]
         return dict_profit_cout
     def liste_trajet_camion_convenable(self,liste_trajets,liste_camions,Budget):
-
-        """"                          output
-                                   --------------
-         liste_finale: la liste des trajets avec les camion correspondants 
-         elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
-         cout_total: c'est le cout qu_on a dépensé <=B 
-         profit_total:le profit qu'on a obtenu                                         """
+       ''' Description:
+        ----------------
+        Cette fonction permet de chercher la meilleur combinaison des trajets et camions qui permet 
+        la maximisation du profit , en se basant sur l'algorithme du sac à dos
         
+        Parameters:
+        ------------
+        liste_camions: list
+        liste de tous les Camions ayant la forme [(camion,puissance,cout)...]
+        liste_trajets: list
+        une liste de tous les trajets possibles [(debut,fin,profit)....]
 
+        Output:
+        --------
+        liste_finale: la liste des trajets avec les camion correspondants 
+        elle est sous la forme [(trajet,[rapport_max,camion_correspondant à ce trajet])]
+        cout_total: c'est le cout qu_on a dépensé <=B 
+        profit_total:le profit qu'on a obtenu         
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme estde l'ordre de O(len(liste_camions)*len(liste_trajets))
+        '''
         dict_profit_cout=self.maximiser_profit_cout(liste_camions,liste_trajets)
         liste_trajet_profit_cout_triée= sorted(dict_profit_cout.items(), key=lambda item:item[1][0],reverse=True)
 
@@ -503,22 +550,33 @@ class Graph:
             rapport_max=liste_trajet_profit_cout_triée[i][1][0]
             profit_totale+=rapport_max*cout_camion
             i+=1
-        if cout_totale>Budget:
+        if cout_totale>Budget:#si on dépasse le budget
             cout_totale=cout_totale-cout_camion   #on retire le cout du dernier camion ajouté
             profit_totale=profit_totale-rapport_max*cout_camion  #on retire le profit du dernier trajet ajouté
             liste_finale.remove(liste_trajet_profit_cout_triée[i-1])
         output_liste=[]#Une liste sous la forme [(camion,trajet)]
         for element in liste_finale:
             output_liste.append((element[1][1],element[0]))
-        
         return frozenset(output_liste),cout_totale,profit_totale
-    #une première amélioration qu'on pourra rajouter au code est d'iliminer certains camionq de la liste des camion à traiter
-#par exemple si un camion est de puissance petite alors que sont cout est grand
-#la meme chose pour un trajet 
-# si un trajet est de puissance minimale très grande alors que son profit est bas on le supprime
     def eliminer_elements_inutils(self,liste_camions):
-    #liste_camions a la meme forme [(camion,puissance,cout)]
-    #liste_trajets a aussi la meme forme:
+        ''' Description:
+        ----------------
+        Cette fonction permet d'éliminer (yassine va decrire)
+        
+        Parameters:
+        ------------
+        liste_camions: list
+        liste de tous les Camions ayant la forme [(camion,puissance,cout)...]
+
+        Output:
+        --------
+        nb_initiale_camions: le nombre des camions initials         
+        nb_camion_finale: le nombre de camion à l'état final
+        liste_camions: la liste finale des camions après élimination des éléments inutils
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(len(liste_camions)^2)
+        '''
         nb_initial_camions=len(liste_camions)
         liste_initiale=liste_camions.copy()
         for i in range (nb_initial_camions):
@@ -541,6 +599,25 @@ class Graph:
 #Question 10
 
 def temps_moyen(file1,file2):
+    ''' Description:
+        ----------------
+       yassine 
+        
+        Parameters:
+        ------------
+        file1:text
+            fichier qui représente le graphe 
+        file2:
+            fichier qui représente les routes au sein de ce graphe 
+
+        Output:
+        --------
+        temps moyen de calcul de la fonction puissance_min        
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O())
+        '''
     g = graph_from_file(file1)
     L = way_from_file(file2)
     n=len(L)
@@ -550,7 +627,7 @@ def temps_moyen(file1,file2):
     S=0
     while i < M :
         t1 = perf_counter()
-        a = Graph.puissance_min(g, L[i][0], L[i][1])
+        a = g.puissance_min(L[i][0], L[i][1])
         t2 = perf_counter()
         Times.append(t2-t1)
         S = S + (t2-t1)
@@ -636,6 +713,25 @@ def graph_from_file(filename):
                 raise Exception("Format incorrect")
     return g
 def way_from_file(filename):
+    ''' Description:
+        ----------------
+        Cette fonction permet de lire les fichiers text des routes et de retourner à partir de ces
+        fichiers une liste de trajets  
+        
+        Parameters:
+        ------------
+        filename: fihchier text
+              fichier sous la forme 'routes.xx.in'
+
+        Output:
+        --------
+        W:list
+            liste des trajets dans le fichier        
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(n) telle que n le nombre de ligne du fichier
+        '''
     with open(filename,"r") as file : 
         n= int(file.readline())
         W = []
@@ -649,6 +745,25 @@ def way_from_file(filename):
     return W 
 
 def trucks_from_file(filename): 
+    ''' Description:
+        ----------------
+        Cette fonction permet de lire les fichiers text des trucks et de retourner à partir de ces
+        fichiers la liste de camions correspondante 
+        
+        Parameters:
+        ------------
+        filename: fihchier text
+              fichier sous la forme 'trucks.xx.in'
+
+        Output:
+        --------
+        W:list
+            liste des camions contenus dans le fichier        
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(n) telle que n le nombre de ligne du fichier
+        '''
     with open(filename,"r") as file :
         n= int(file.readline())
         T=[]
@@ -661,6 +776,26 @@ def trucks_from_file(filename):
                 raise Exception("Format incorrect")
     return T
 def trucks_from_file_1(filename): 
+    ''' Description:
+        ----------------
+        yassine
+        Cette fonction permet de lire les fichiers text des trucks et d'éliminer les Camions 
+        fichiers la liste de camions correspondante 
+        
+        Parameters:
+        ------------
+        filename: fihchier text
+              fichier sous la forme 'trucks.xx.in'
+
+        Output:
+        --------
+        W:list
+            liste des camions utils contenus dans le fichier        
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(n) telle que n le nombre de ligne du fichier
+        '''
     with open(filename,"r") as file :
         n= int(file.readline())
         T=[]
@@ -680,30 +815,46 @@ def trucks_from_file_1(filename):
 
 
 
-#Question 5
-#recherche du chemin le plus court à l'aide de dijkstra
-#algorithme de dijikstra
-#graph={sommet:["liste des sommets lié à ce sommet, chaque sommet est sous la forme d'un tuple(sommet,power, distance)"]
 def dijkstra(graph,source,puissance_camion):
-        precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
-        dejaTraite = {x:False for x in graph.keys()}#l'element est déja traité? False ou True
-        distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
-        distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
-        a_traiter = [(0, source)]#il contient la liste des maison à evaluer. aen initialisation on met notre orgine avec une distance de 0
-        while a_traiter:#tant qu'il a des element à traiter on va parcourir la boucle
-        # on fait parcours en larguer : une fois un element et traité on parcourt ses voisins et puis les voisins des voisins etc...
-            dist_noeud, noeud = a_traiter.pop()
-            if not dejaTraite[noeud]:
-                dejaTraite[noeud] = True
-                for voisin in graph[noeud]:#graph[noued] est une liste
-                    if voisin[1]<=puissance_camion:
-                        dist_voisin = dist_noeud + voisin[2]
-                        if dist_voisin < distance[voisin[0]]:
-                            distance[voisin[0]] = dist_voisin
-                            precedent[voisin[0]] = noeud
-                            a_traiter.append((dist_voisin, voisin[0]))
-            a_traiter.sort(reverse=True)
-        return distance, precedent
+    ''' Description:
+        ----------------
+        Cette fonction est inspirée de l'algorithme classique de Dijkstra, elle constitue une première 
+        étape pour le calcul du plus court chemin dans un graphe 
+        
+        Parameters:
+        ------------
+        graph: dict
+            Un dictionnaore qui contient la liste d'adjacence de chaque sommet sous la forme
+            graph[node] = [(neighbor1, p1, d1), (neighbor1, p1, d1), ...]
+
+        Output:
+        --------
+        W:list
+            liste des camions contenus dans le fichier        
+        
+        Complexity:
+        ------------
+        La complexité de l'algorithme est de l'ordre de O(n) telle que n le nombre de ligne du fichier
+    '''
+    precedent = {x:None for x in graph.keys()}#les précedents des sommets dans le trajet minimal
+    dejaTraite = {x:False for x in graph.keys()}#l'élément est déja traité? False ou True
+    distance =  {x:float('inf') for x in graph.keys()}#la distance de l'origine à chaque sommet
+    distance[source] = 0 #initialisation : la distance de l'origine à l'origine c"est 0
+    a_traiter = [(0, source)]#il contient la liste des éléments à evaluer. 
+    while a_traiter:
+    # on fait un parcours en largeur 
+        dist_noeud, noeud = a_traiter.pop()
+        if not dejaTraite[noeud]:
+            dejaTraite[noeud] = True
+            for voisin in graph[noeud]:
+                if voisin[1]<=puissance_camion:
+                    dist_voisin = dist_noeud + voisin[2]
+                    if dist_voisin < distance[voisin[0]]:
+                        distance[voisin[0]] = dist_voisin
+                        precedent[voisin[0]] = noeud
+                        a_traiter.append((dist_voisin, voisin[0]))
+        a_traiter.sort(reverse=True)
+    return distance, precedent
 
 
 # Question 3 (suite)
