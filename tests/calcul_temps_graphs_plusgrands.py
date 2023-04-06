@@ -2,7 +2,7 @@
 #1 ier cas sans éliminer les camions non utiles et le 2ème avec élimination
 import sys 
 sys.path.append("delivery_network")
-from graph import Graph,graph_from_file,way_from_file,trucks_from_file,EnsembleDisjoint,trucks_from_file_1
+from graph import Graph,graph_from_file,way_from_file,trucks_from_file,trucks_from_file_1
 import unittest   # The test framework
 from time import perf_counter
 #une comparaison entre le premier cas et le deuxième cas
