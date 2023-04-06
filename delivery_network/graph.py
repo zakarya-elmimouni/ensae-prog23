@@ -356,7 +356,7 @@ class Graph:
         """
         Description:
         ---------------
-        cette fonction permet de retourner la puissance minimale d'un graphe en se basant sur son arbre couvrant
+        Cette fonction permet de retourner la puissance minimale d'un graphe en se basant sur son arbre couvrant
         
         Parameters:
         ------------
@@ -581,7 +581,8 @@ class Graph:
     def eliminer_elements_inutils(self,liste_camions):
         ''' Description:
         ----------------
-        Cette fonction permet d'éliminer (yassine va decrire)
+        Cette fonction permet d'éliminer les camions qui nous avons au moins un meilleur camion qu'eux
+        (càd un meilleur camion en fonction du cout (plus petit) et une meilleure puissance(plus grande))
         
         Parameters:
         ------------
@@ -729,8 +730,9 @@ def trucks_from_file(filename):
 def trucks_from_file_1(filename): 
     ''' Description:
         ----------------
-        yassine
-        Cette fonction permet de lire les fichiers text des trucks et d'éliminer les Camions 
+    
+        Cette fonction permet de lire les fichiers text des trucks et d'éliminer les Camions par rapport aux quels 
+        nous avons au moins un meilleur camion que celui-ci  (i.e. càd une plus grande puissance et un cout plus petit)
         fichiers la liste de camions correspondante 
         
         Parameters:
@@ -1072,7 +1074,7 @@ def temps_moyen_3(filenetwork,fileroutes):
         
     return tempstotale/nb_de_tarjet_calculé
 
-# Question de seance3 qui demande le calcul du temps d'execution des fichiers routes.x.in
+# Question 17 de seance3 qui demande le calcul du temps d'execution des fichiers routes.x.in
 
 def temps_totale(filenetwork,fileroutes):
     g=graph_from_file(filenetwork)
@@ -1093,24 +1095,7 @@ def temps_totale(filenetwork,fileroutes):
                 raise Exception("Format incorrect")
     return tempstotale
 
-def nouveau_temps_moyen(file):
-    g = graph_from_file(file)
-    K= g.keys()
-    a=len(K)
-    i = 0
-    L=[]
-    S=0
-    while i < 31 :
-        n= randint(0, a-1)
-        m= randint(0,a-1)
-        if n!=m :
-            t1 = perf_counter()
-            a = Graph.puissance_min(g, K[n],K[m])
-            t2 = perf_counter()
-            L.append(t2-t1)
-            S = S + t2-t1
-            i = i+1
-    return S/i
+
 
 
 
